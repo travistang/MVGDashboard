@@ -13,9 +13,12 @@ export default class {
   getStationsEndpoint(name) {
     return `${this.endpoint}/location/query?q=${name}`
   }
+  getStationsUnrestrictedEndpoint(name) {
+    return `${this.endpoint}/location/queryWeb?q=${name}`
+  }
   // useful functions
   async getAllStations() {
-    let url = this.getStationsEndpoint("")
+    let url = this.getStationsUnrestrictedEndpoint("")
     try {
       let response = await this.performRequest(url)
       return response.locations
@@ -32,10 +35,9 @@ export default class {
     return response.departures.slice(0,numDepartures)
   }
 
-  async getClosestStations(lat,lng,number = 5) {
+  async getClosestStations(lat,lng,stations,number = 5) {
     if(number <= 0 ) return []
 
-    let stations = await this.getAllStations()
     if(stations.error) return stations // this is an error!
     // now filter the closest
     // kudos https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula#27943
@@ -57,7 +59,7 @@ export default class {
       return d;
     }
 
-    let stationsByDistance = stations.sort(a,b => {
+    let stationsByDistance = stations.sort((a,b) => {
       // convert a,b to the distance given
       let latA = a.latitude
       let lngA = a.longitude

@@ -6,7 +6,8 @@ import {
   NavItem,
   NavDropdown,
   MenuItem,
-  Nav
+  Nav,
+  Label
 } from 'react-bootstrap'
 import styles from './Home.css';
 
@@ -16,13 +17,26 @@ export default class Home extends Component<Props> {
   props: Props;
   constructor(props) {
     super(props)
-    this.state = {
-      time: new Date()
-    }
-    // update the time every one second
-    setInterval(() => {
-      this.setState({time: new Date()})
-    },1000)
+  }
+  getNextRefreshTime() {
+    let remainder = this.props.clock % 60
+    if(remainder == 0) return 0
+    return 60 - remainder
+  }
+  getNextRefreshComponent() {
+    let nextRefreshTime = this.getNextRefreshTime()
+    if(nextRefreshTime == 0)
+      return (
+        <NavItem disabled>
+            <Label bsStyle="success">Refreshing...</Label>
+        </NavItem>
+      )
+    else
+      return (
+        <NavItem disabled>
+          Next refresh in : {this.getNextRefreshTime()} second(s)
+        </NavItem >
+      )
   }
   navBar() {
     return (
@@ -32,9 +46,14 @@ export default class Home extends Component<Props> {
             <a href="#home">MVG Dashboard</a>
           </Navbar.Brand>
         </Navbar.Header>
+        <Nav>
+        {
+          this.getNextRefreshComponent()
+        }
+        </Nav>
         <Nav pullRight>
           <NavItem eventKey={1} href="#">
-            {this.state.time.toLocaleString()}
+            {this.props.currentTime.toLocaleString()}
           </NavItem>
         </Nav>
       </Navbar>)

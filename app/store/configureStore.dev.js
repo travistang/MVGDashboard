@@ -7,7 +7,7 @@ import rootReducer from '../reducers';
 import * as counterActions from '../actions/counter';
 import type { counterStateType } from '../reducers/counter';
 import createSagaMiddleware from 'redux-saga'
-
+import rootSaga from '../sagas'
 const sagaMiddleware = createSagaMiddleware()
 
 const history = createHashHistory();
@@ -58,6 +58,8 @@ const configureStore = (initialState?: counterStateType) => {
 
   // Create Store
   const store = createStore(rootReducer, initialState, enhancer);
+  // run root saga from here
+  sagaMiddleware.run(rootSaga)
 
   if (module.hot) {
     module.hot.accept(
