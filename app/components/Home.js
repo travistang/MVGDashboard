@@ -79,13 +79,37 @@ export default class Home extends Component<Props> {
       <InformationOverlay {...props} />
     )
   }
+  topContainer() {
+    return (
+      <div style={style.mainContainer.topContainer}>
+        <div style={style.mainContainer.topContainer.leftContainer}>
+          <h6> You are around </h6>
+          <h1> Feldmoching </h1>
+        </div>
+
+        <div style={style.mainContainer.topContainer.rightContainer}>
+        right container
+        </div>
+      </div>
+    )
+  }
+  bottomContainer() {
+    return (
+      <div style={style.mainContainer.bottomContainer}>
+        Bottom Container
+      </div>
+    )
+  }
   render() {
     return (
 
       <div>
         {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
-
+        <div style={style.mainContainer}>
+          {this.topContainer()}
+          {this.bottomContainer()}
+        </div>
       </div>
     );
   }
