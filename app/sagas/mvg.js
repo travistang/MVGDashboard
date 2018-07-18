@@ -6,7 +6,7 @@ import * as MVGAction from '../actions/mvg'
 import Api from '../api'
 
 const apiInstance = new Api()
-function* fetchStation() {
+export function* fetchStation() {
   let stations = yield call(apiInstance.getAllStations.bind(apiInstance))
 
   if(stations.error) {

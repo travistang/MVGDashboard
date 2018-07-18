@@ -8,14 +8,8 @@ type Props = {};
 
 function mapStateToProps(state) {
   return {
-    ...state.clock
+    ...state.clock,
+    ...state.mvg
   }
 }
 export default connect(mapStateToProps,null)(Home)
-// export default class HomePage extends Component<Props> {
-//   props: Props;
-//
-//   render() {
-//     return <Home />;
-//   }
-// }

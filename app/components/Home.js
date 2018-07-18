@@ -9,8 +9,9 @@ import {
   Nav,
   Label
 } from 'react-bootstrap'
-import styles from './Home.css';
+import style from './Style.js';
 
+import InformationOverlay from './InformationOverlay'
 type Props = {};
 
 export default class Home extends Component<Props> {
@@ -48,7 +49,7 @@ export default class Home extends Component<Props> {
         </Navbar.Header>
         <Nav>
         {
-          this.getNextRefreshComponent()
+          this.isStationLoaded() && this.getNextRefreshComponent()
         }
         </Nav>
         <Nav pullRight>
@@ -58,10 +59,33 @@ export default class Home extends Component<Props> {
         </Nav>
       </Navbar>)
   }
+  isStationLoaded() {
+    return this.props.stations && this.props.stations.length > 0
+  }
+  loadingOverlay() {
+    let props = {}
+    if(!this.props.error) {
+      props = {
+        overlayType: "loading",
+        title: "Loading Stations from MVG..."
+      }
+    } else {
+      props = {
+        overlayType: "error",
+        title: this.props.error
+      }
+    }
+    return (
+      <InformationOverlay {...props} />
+    )
+  }
   render() {
     return (
+
       <div>
+        {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
+
       </div>
     );
   }

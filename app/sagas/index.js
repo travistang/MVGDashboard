@@ -3,7 +3,7 @@ import { call, put,select,all,spawn } from "redux-saga/effects"
 import * as MVGAction from '../actions/mvg'
 import Api from './mvg'
 import {CLOCK_RESET,CLOCK_TICK} from '../actions/clock'
-import {watchFetchStations,watchFetchStationsSuccess} from './mvg'
+import {fetchStation,watchFetchStationsSuccess} from './mvg'
 
 const getClock = (state) => state.clock.clock
 //reset clock
@@ -22,20 +22,25 @@ export function* tick() {
     // only fetch at the beginning of the program
     yield all(
     [
-      // put({type: MVGAction.GET_STATIONS}),
-      put({type: CLOCK_TICK}),
+      put({type: MVGAction.GET_STATIONS}),
+      // put({type: CLOCK_TICK}),
       // call(resetClock),
     //
     ])
   }
-  else yield put({type: CLOCK_TICK})
+  // tick the clock in all situation
+  yield put({type: CLOCK_TICK})
 }
-
-export default function* mainLoop(getState) {
-  yield spawn(watchFetchStations)
-  yield spawn(watchFetchStationsSuccess)
+export function* mainLoop() {
   while(true) {
     yield delay(1000)
     yield call(tick)
   }
+}
+export default function* rootSaga(getState) {
+  yield [
+    fetchStation(),
+    watchFetchStationsSuccess(),
+    mainLoop()
+  ]
 }

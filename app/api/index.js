@@ -37,7 +37,8 @@ export default class {
 
   async getClosestStations(lat,lng,stations,number = 5) {
     if(number <= 0 ) return []
-
+    console.log('got station list')
+    console.log(stations)
     if(stations.error) return stations // this is an error!
     // now filter the closest
     // kudos https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula#27943
@@ -66,7 +67,7 @@ export default class {
       let latB = b.latitude
       let lngB = b.longitude
 
-      return getDistanceFromLatLonInKm(lat,lng,latA,lngA) < getDistanceFromLatLonInKm(lat,lng,latB,lngB)
+      return getDistanceFromLatLonInKm(lat,lng,latA,lngA) - getDistanceFromLatLonInKm(lat,lng,latB,lngB)
     })
 
     return stationsByDistance.slice(0,number)
