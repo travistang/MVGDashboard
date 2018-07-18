@@ -6,6 +6,32 @@ let centerContentStyle = {
 }
 
 export default {
+  centerContentStyle,
+  stationCard: {
+    width: "100%",
+    // maxHeight: "72px",
+    display: "flex",
+    flexDirection: "row",
+    borderBottom: "1px solid white",
+
+    leftContainer: {
+      display: "flex",
+      flexDirection: "column",
+      flex: 3,
+      marginBottom: "4px",
+      tokenList: {
+        display: "flex",
+        justifyContent: "spaceAround",
+        alignItems: "flexStart"
+      }
+    },
+    rightContainer: {
+      display: "flex",
+      flex: 1,
+      flexDirection: "column",
+      ...centerContentStyle
+    }
+  },
   loadingOverlayStyle: {
     ...centerContentStyle,
 
@@ -28,8 +54,9 @@ export default {
   },
 
   mainContainer: {
-    position: "absolute",
+    // position: "absolute",
     height: "100%",
+    top: 0,
     width: "100%",
     bottom: 0,
     left: 0,
@@ -48,7 +75,7 @@ export default {
         paddingLeft: "10%",
       },
       rightContainer: {
-        flex: 1,
+        flex: 2,
         flexDirection: "row",
       }
     },

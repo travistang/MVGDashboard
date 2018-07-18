@@ -31,24 +31,31 @@ function* onFetchStationSuccess() {
   const stations = yield select(getAllStations)
   if(stations) {
     let {lat,lng} = yield call(getGeoLocation)
-    console.log('got location')
-    console.log(lat,lng)
+    yield put({type: MVGAction.SET_CURRENT_LOCATION,lat,lng})
     let closestStations = yield call(apiInstance.getClosestStations,lat,lng,stations)
-    console.log('closest stations')
-    console.log(closestStations)
     yield put({type: MVGAction.SET_CLOSEST_STATION,closest_stations:closestStations})
+    yield put({type: MVGAction.GET_DEPARTURES})
   }
-
-
-
-  // get your current location
-
-
 }
+
+function* onGetDepartures() {
+  const getClosestStationsFromState = (state) => state.mvg.closest_stations
+  let closestStations = yield select(getClosestStationsFromState)
+
+  if(closestStations && closestStations.length) {
+    console.log('closestStations from on get departures')
+    console.log(closestStations)
+    // let departures = yield all(closestStations.map(s => s.id))
+  }
+}
+
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)
 }
 
+export function* watchGetDepartures() {
+  yield takeLatest(MVGAction.GET_DEPARTURES,onGetDepartures)
+}
 
 // given a successful fetch of stations, trigger the closest point calculation
 export function* watchFetchStationsSuccess() {

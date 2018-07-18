@@ -12,6 +12,8 @@ import {
 import style from './Style.js';
 
 import InformationOverlay from './InformationOverlay'
+import StationCard from './StationCard'
+import * as Utils from '../utils/utils'
 type Props = {};
 
 export default class Home extends Component<Props> {
@@ -79,19 +81,39 @@ export default class Home extends Component<Props> {
       <InformationOverlay {...props} />
     )
   }
+  // this takes an station object and return name like "Name,Place"
+  getClosestStationsName() {
+    if(this.props.closest_stations.length == 0) return ""
+    return Utils.getStationName(this.props.closest_stations[0])
+  }
   topContainer() {
     return (
       <div style={style.mainContainer.topContainer}>
         <div style={style.mainContainer.topContainer.leftContainer}>
           <h6> You are around </h6>
-          <h1> Feldmoching </h1>
+          <h1> {this.getClosestStationsName()} </h1>
         </div>
 
         <div style={style.mainContainer.topContainer.rightContainer}>
-        right container
+          {this.closestStationList()}
         </div>
       </div>
     )
+  }
+  closestStationList() {
+    if(!this.props.closest_stations || !this.props.closest_stations.length) return (
+      <div style={style.centerContentStyle}>
+        <h5> No stations around </h5>
+      </div>
+    )
+    let headerElement = <h3> Stations Nearby </h3>
+    let stationElements = this.props.closest_stations
+      .map(s => <StationCard station={s} lat={this.props.lat} lng={this.props.lng} />)
+      .slice(1)
+    return [
+      headerElement,
+      ...stationElements
+    ]
   }
   bottomContainer() {
     return (
