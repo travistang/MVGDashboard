@@ -13,7 +13,7 @@ import style from './Style.js';
 
 import InformationOverlay from './InformationOverlay'
 import StationCard from './StationCard'
-import DestinationList from './DestinationList'
+import DestinationList from '../containers/DestinationList'
 import * as Utils from '../utils/utils'
 type Props = {};
 

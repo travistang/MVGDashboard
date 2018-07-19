@@ -18,6 +18,7 @@ export default class StationCard extends React.Component {
       width: "24px",
       backgroundColor,
       margin: "4px",
+      fontWeight: "bold",
       ...style.centerContentStyle,
     }
     return (

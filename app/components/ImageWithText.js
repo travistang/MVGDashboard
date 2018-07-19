@@ -10,7 +10,7 @@ export default class ImageWithText extends React.Component {
   render() {
     // let iwtStyle =
     return (
-      <div style={{...style.imageWithText,opacity:this.props.opacity || 1}}>
+      <div onClick={this.props.onClick} style={{...style.imageWithText,opacity:this.props.opacity || 1}}>
         {this.getIcon()}
         <h4>{this.props.text}</h4>
       </div>

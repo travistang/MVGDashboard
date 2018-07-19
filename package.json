@@ -202,6 +202,7 @@
     "@lynbarry/mvg-api": "^3.0.0",
     "devtron": "^1.4.0",
     "electron-debug": "^1.5.0",
+    "electron-json-storage": "^4.1.1",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "radium": "^0.24.1",
