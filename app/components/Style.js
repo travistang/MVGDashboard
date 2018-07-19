@@ -5,14 +5,24 @@ let centerContentStyle = {
   justifyContent: "center"
 }
 
+let underlineStyle = {
+  borderBottom: "1px solid white"
+}
+
 export default {
   centerContentStyle,
+  imageWithText: {
+    display: "flex",
+    margin: "24px",
+    flexDirection: "column",
+    ...centerContentStyle,
+  },
   stationCard: {
     width: "100%",
     // maxHeight: "72px",
     display: "flex",
     flexDirection: "row",
-    borderBottom: "1px solid white",
+    ...underlineStyle,
 
     leftContainer: {
       display: "flex",
@@ -62,27 +72,37 @@ export default {
     left: 0,
 
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
 
-    topContainer: {
+    leftContainer: {
       flex: 1,
       display: "flex",
       ...centerContentStyle,
-
-      leftContainer: {
-        flex: 3,
+      flexDirection: "column",
+      topContainer: {
+        flex: 1,
         flexDirection: "column",
-        paddingLeft: "10%",
+        // paddingLeft: "10%",
+        ...underlineStyle,
       },
-      rightContainer: {
-        flex: 2,
-        flexDirection: "row",
+      bottomContainer: {
+        flex: 7,
+        flexDirection: "column",
+        display: "flex"
       }
     },
-    bottomContainer: {
-      flex: 3,
+    rightContainer: {
+      flex: 1,
       display: "flex",
+
       ...centerContentStyle,
+      flexDirection: "column",
+      topContainer: {
+        flex: 1,
+      },
+      bottomContainer: {
+        flex: 1,
+      }
     }
   }
 }

@@ -13,6 +13,7 @@ import style from './Style.js';
 
 import InformationOverlay from './InformationOverlay'
 import StationCard from './StationCard'
+import DestinationList from './DestinationList'
 import * as Utils from '../utils/utils'
 type Props = {};
 
@@ -86,20 +87,19 @@ export default class Home extends Component<Props> {
     if(this.props.closest_stations.length == 0) return ""
     return Utils.getStationName(this.props.closest_stations[0])
   }
-  topContainer() {
+  leftContainer() {
     return (
-      <div style={style.mainContainer.topContainer}>
-        <div style={style.mainContainer.topContainer.leftContainer}>
-          <h6> You are around </h6>
-          <h1> {this.getClosestStationsName()} </h1>
-        </div>
-
-        <div style={style.mainContainer.topContainer.rightContainer}>
-          {this.closestStationList()}
-        </div>
+    <div style={style.mainContainer.leftContainer}>
+      <div style={style.mainContainer.leftContainer.topContainer}>
+        <h6> You are around </h6>
+        <h1> {this.getClosestStationsName()} </h1>
       </div>
-    )
+
+      <DestinationList />
+
+    </div>)
   }
+
   closestStationList() {
     if(!this.props.closest_stations || !this.props.closest_stations.length) return (
       <div style={style.centerContentStyle}>
@@ -115,10 +115,15 @@ export default class Home extends Component<Props> {
       ...stationElements
     ]
   }
-  bottomContainer() {
+  rightContainer() {
     return (
-      <div style={style.mainContainer.bottomContainer}>
-        Bottom Container
+      <div style={style.mainContainer.rightContainer}>
+        <div style={style.mainContainer.rightContainer.topContainer}>
+          {this.closestStationList()}
+        </div>
+        <div style={style.mainContainer.rightContainer.bottomContainer}>
+          bottom right container
+        </div>
       </div>
     )
   }
@@ -129,8 +134,8 @@ export default class Home extends Component<Props> {
         {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
         <div style={style.mainContainer}>
-          {this.topContainer()}
-          {this.bottomContainer()}
+          {this.leftContainer()}
+          {this.rightContainer()}
         </div>
       </div>
     );
