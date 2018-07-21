@@ -1,5 +1,6 @@
 import React from 'react'
 import style from './Style.js'
+import PropTypes from 'prop-types'
 
 export default class LineTag extends React.Component {
   render() {

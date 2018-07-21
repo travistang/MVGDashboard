@@ -15,6 +15,7 @@ export default {
     display: "flex",
     margin: "24px",
     flexDirection: "column",
+    textAlign: "center",
     ...centerContentStyle,
   },
   stationCard: {
