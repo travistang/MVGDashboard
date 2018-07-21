@@ -1,7 +1,7 @@
 import React from 'react'
 import style from './Style.js'
 import ImageWithText from './ImageWithText'
-
+import DestinationCard from './DestinationCard'
 export default class DestinationList extends React.Component {
   constructor(props) {
     super(props)
@@ -14,7 +14,7 @@ export default class DestinationList extends React.Component {
   }
 
   header() {
-    if(this.props.destinations.length == 0) return null
+    if(this.props.destinations.length == 0 && !this.state.isAddingNewDestination) return null
     return <h3> Time to Destination </h3>
   }
   displayAddDestinationCell() {
@@ -26,7 +26,7 @@ export default class DestinationList extends React.Component {
     return <ImageWithText onClick={this.displayAddDestinationCell.bind(this)} opacity={0.5} glyphicon="plus" text="Click to add a new destination" />
   }
   editComponent() {
-    return <div> Edit component </div>
+    return <DestinationCard />
   }
   render() {
     return (
