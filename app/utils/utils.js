@@ -1,3 +1,6 @@
+import React from 'react'
+import LineTag from '../components/LineTag'
+
 export const getStationName = (station) => {
   let {name,place} = station
   if(!name || ! place) return ""
@@ -37,5 +40,37 @@ export const getProductColorCode = (product) => {
 }
 
 export const getProductShortName = (product) => {
-  return product[0]
+  switch(product) {
+    case 'TRAM':
+      return 'Tram'
+    case 'BUS':
+      return product
+    default:
+      return product[0]
+  }
+}
+
+export const getStationProductLineTags = (station) => {
+  return station.products.map(p => <LineTag line={getProductShortName(p)} backgroundColor={getProductColorCode(p)} />)
+}
+
+export const flattenList = (lists) => {
+  return lists.reduce((a,b) => ([...a,...b]))
+}
+
+export const unixTimeStampToDate = (ts) => new Date(ts)
+export const timeDifferenceToDateString = (timeA,timeB) => {
+  let diff = timeB - timeA
+  let hasPassed = diff < 0
+  // https://stackoverflow.com/questions/1787939/check-time-difference-in-javascript#1788084
+  var msec = diff;
+  var hh = Math.floor(msec / 1000 / 60 / 60);
+  msec -= hh * 1000 * 60 * 60;
+  var mm = Math.floor(msec / 1000 / 60);
+  msec -= mm * 1000 * 60;
+  var ss = Math.floor(msec / 1000);
+  msec -= ss * 1000;
+  return {
+    hh,mm,ss,hasPassed
+  }
 }

@@ -1,10 +1,10 @@
 // sagas that listens to MVG-api related action
 // also launch actual api requests and dispatch action
 import {takeLatest,takeEvery} from 'redux-saga'
-import { take,put,call,select } from "redux-saga/effects"
+import { take,put,call,select,all } from "redux-saga/effects"
 import * as MVGAction from '../actions/mvg'
 import Api from '../api'
-
+import * as Utils from '../utils/utils'
 const apiInstance = new Api()
 export function* fetchStation() {
   let stations = yield call(apiInstance.getAllStations.bind(apiInstance))
@@ -43,9 +43,12 @@ function* onGetDepartures() {
   let closestStations = yield select(getClosestStationsFromState)
 
   if(closestStations && closestStations.length) {
-    console.log('closestStations from on get departures')
-    console.log(closestStations)
-    // let departures = yield all(closestStations.map(s => s.id))
+    let closestStationsId = closestStations.map(s => s.id)
+    let departures = yield all(closestStationsId.map(id => call(apiInstance.getDepartureById.bind(apiInstance),id)))
+    let departureLists = Utils.flattenList(departures)
+      .sort((a,b) => a.departureTime - b.departureTime)
+      .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures
+    yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
   }
 }
 

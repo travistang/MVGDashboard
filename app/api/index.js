@@ -32,14 +32,23 @@ export default class {
     let url = this.getDepartureEndpointById(id)
     let response = await this.performRequest(url)
     if(response.error) return response // sorry..
-    if(numDepartures <= 0 ) return response.departures
-    return response.departures.slice(0,numDepartures)
+    let result
+    if(numDepartures <= 0 ) result = response.departures
+    else result = response.departures.slice(0,numDepartures)
+    return result.map(dep => ({...dep,id})) // add the request id to departures, so that the origin of the departure can be traced later
   }
-
-  async getClosestStations(lat,lng,stations,number = 5) {
+  async getServingLines(id) {
+    let url = this.getDepartureEndpointById(id)
+    let response = await this.performRequest(url)
+    if(response.error) return response
+    return response.servingLines.map(line => ({
+      destination: line.destination,
+      line: line.lineNumber,
+      product: line.product
+    }))
+  }
+  async getClosestStations(lat,lng,stations,number = 3) {
     if(number <= 0 ) return []
-    console.log('got station list')
-    console.log(stations)
     if(stations.error) return stations // this is an error!
     // now filter the closest
     // kudos https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula#27943

@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import style from './Style.js'
+import LineTag from './LineTag'
 import * as Utils from '../utils/utils'
 
 export default class StationCard extends React.Component {
@@ -13,18 +14,8 @@ export default class StationCard extends React.Component {
   getTransportTypeToken(type) {
     let backgroundColor = Utils.getProductColorCode(type)
     let shortName = Utils.getProductShortName(type)
-    let tokenStyle = {
-      height: "16px",
-      width: "24px",
-      backgroundColor,
-      margin: "4px",
-      fontWeight: "bold",
-      ...style.centerContentStyle,
-    }
     return (
-      <div style={tokenStyle}>
-        {shortName}
-      </div>
+      <LineTag backgroundColor={backgroundColor} line={shortName} />
     )
   }
   render() {

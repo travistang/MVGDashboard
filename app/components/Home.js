@@ -11,8 +11,10 @@ import {
 } from 'react-bootstrap'
 import style from './Style.js';
 
+import ImageWithText from './ImageWithText'
 import InformationOverlay from './InformationOverlay'
 import StationCard from './StationCard'
+import DepartureCard from '../containers/DepartureCard'
 import DestinationList from '../containers/DestinationList'
 import * as Utils from '../utils/utils'
 type Props = {};
@@ -39,7 +41,7 @@ export default class Home extends Component<Props> {
       return (
         <NavItem disabled>
           Next refresh in : {this.getNextRefreshTime()} second(s)
-        </NavItem >
+        </NavItem>
       )
   }
   navBar() {
@@ -82,17 +84,17 @@ export default class Home extends Component<Props> {
       <InformationOverlay {...props} />
     )
   }
-  // this takes an station object and return name like "Name,Place"
-  getClosestStationsName() {
-    if(this.props.closest_stations.length == 0) return ""
-    return Utils.getStationName(this.props.closest_stations[0])
-  }
   leftContainer() {
+    if(this.props.closest_stations.length == 0) return null
+    let closestStation = this.props.closest_stations[0]
+
     return (
     <div style={style.mainContainer.leftContainer}>
       <div style={style.mainContainer.leftContainer.topContainer}>
         <h6> You are around </h6>
-        <h1> {this.getClosestStationsName()} </h1>
+        <h1> {Utils.getStationName(closestStation)}
+        </h1>
+        <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
       </div>
 
       <DestinationList />
@@ -115,14 +117,21 @@ export default class Home extends Component<Props> {
       ...stationElements
     ]
   }
+  departureList() {
+    if(!this.props.departures.length) return (
+      <ImageWithText glyphicon="plus" text="No departures nearby" opacity={0.8} />
+    )
+    return this.props.departures.map(departure => <DepartureCard departure={departure} />)
+  }
   rightContainer() {
+    // <div style={style.mainContainer.rightContainer.topContainer}>
+    //   {this.closestStationList()}
+    // </div>
     return (
       <div style={style.mainContainer.rightContainer}>
-        <div style={style.mainContainer.rightContainer.topContainer}>
-          {this.closestStationList()}
-        </div>
+
         <div style={style.mainContainer.rightContainer.bottomContainer}>
-          bottom right container
+          {this.departureList()}
         </div>
       </div>
     )

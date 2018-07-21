@@ -9,7 +9,22 @@ let underlineStyle = {
   borderBottom: "1px solid white"
 }
 
+let tokenList = {
+    display: "flex",
+    justifyContent: "spaceAround",
+    alignItems: "flexStart"
+}
 export default {
+  tokenList,
+  lineTag: {
+
+    height: "16px",
+    width: "24px",
+    margin: "4px",
+    fontSize: "9px",
+    fontWeight: "bold",
+    ...centerContentStyle,
+  },
   centerContentStyle,
   imageWithText: {
     display: "flex",
@@ -29,11 +44,8 @@ export default {
       flexDirection: "column",
       flex: 3,
       marginBottom: "4px",
-      tokenList: {
-        display: "flex",
-        justifyContent: "spaceAround",
-        alignItems: "flexStart"
-      }
+      tokenList,
+
     },
     rightContainer: {
       display: "flex",

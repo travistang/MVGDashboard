@@ -22,6 +22,8 @@ export default function mvg(state = defaultState,action) {
       return {...state,closest_stations: action.closest_stations}
     case MVGAction.SET_CURRENT_LOCATION:
       return {...state,lat: action.lat,lng: action.lng}
+    case MVGAction.GET_DEPARTURES_SUCCESS:
+      return {...state,departures: action.departures}
     default: return state
   }
 }
