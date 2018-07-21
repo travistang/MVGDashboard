@@ -34,10 +34,12 @@ export default {
       upperRow: {
         flex: 1,
         fontWeight: "bold",
+        display: "flex",
+        flexDirection: "row"
       },
       lowerRow: {
         flex: 1,
-        fontSize: '9px',
+        fontSize: '12px',
       }
     },
 
@@ -148,10 +150,18 @@ export default {
       flexDirection: "column",
       topContainer: {
         flex: 1,
+        alignText: 'center',
+        width: "100%",
+        marginBottom: "16px",
+      },
+      middleContainer: {
+        flex: "4",
+        width: "100%",
       },
       bottomContainer: {
-        flex: 1,
-        width: "100%",
+        flex: "1",
+        width: "100%"
+
       }
     }
   }

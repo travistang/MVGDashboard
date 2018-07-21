@@ -7,7 +7,8 @@ import {
   NavDropdown,
   MenuItem,
   Nav,
-  Label
+  Label,
+  Pagination,
 } from 'react-bootstrap'
 import style from './Style.js';
 
@@ -23,6 +24,11 @@ export default class Home extends Component<Props> {
   props: Props;
   constructor(props) {
     super(props)
+
+    this.state = {
+      numDeparturesShown: 10,
+      departurePage: 1,
+    }
   }
   getNextRefreshTime() {
     let remainder = this.props.clock % 60
@@ -130,17 +136,35 @@ export default class Home extends Component<Props> {
     if(!this.props.departures.length) return (
       <ImageWithText glyphicon="plus" text="No departures nearby" opacity={0.8} />
     )
-    return this.props.departures.map(departure => <DepartureCard departure={departure} />)
+    let indexFrom = this.state.numDeparturesShown * this.state.departurePage
+    let indexTo = Math.min(this.props.departures.length,indexFrom + this.state.numDeparturesShown)
+    return this.props.departures
+      .slice(indexFrom,indexTo)
+      .map(departure => <DepartureCard departure={departure} />)
+  }
+  getDeparturePagination() {
+    // you dont need a pager
+    if(this.props.departures.length <= this.state.numDeparturesShown) return null
+    let numPageNeeded = Math.floor(this.props.departures.length / this.state.numDeparturesShown)
+    return (
+      <Pagination>
+        {Utils.listOfN(numPageNeeded).map(n => <Pagination.Item active={this.state.departurePage == n} onClick={() => this.setState({...this.state,departurePage: n})}>{n}</Pagination.Item>)}
+      </Pagination>
+    )
   }
   rightContainer() {
-    // <div style={style.mainContainer.rightContainer.topContainer}>
-    //   {this.closestStationList()}
-    // </div>
+
     return (
       <div style={style.mainContainer.rightContainer}>
+        <div style={style.mainContainer.rightContainer.topContainer}>
+            <h2>Departures</h2>
+        </div>
+        <div style={style.mainContainer.rightContainer.middleContainer}>
+          {this.departureList()}
+        </div>
 
         <div style={style.mainContainer.rightContainer.bottomContainer}>
-          {this.departureList()}
+          {this.getDeparturePagination()}
         </div>
       </div>
     )

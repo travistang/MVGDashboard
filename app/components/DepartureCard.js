@@ -8,9 +8,8 @@ export default class DepartureCard extends React.Component {
 
   departureTime() {
     return Utils
-      .unixTimeStampToDate(this.props.departure.departureTime)
-      .toLocaleTimeString()
-      .substring(0,5)
+      .unixTimeStampToDateHHMM(this.props.departure.departureTime)
+
   }
   timeLeft() {
     let {hasPassed,hh,mm,ss} = Utils.timeDifferenceToDateString(this.props.currentTime,this.props.departure.departureTime)
@@ -21,7 +20,7 @@ export default class DepartureCard extends React.Component {
     else timestr = `${pad(mm)}:${pad(ss)}`
     return [
       <h6 style={style.centerContentStyle}> In </h6>,
-      <h5>{timestr}</h5>
+      <h5 style={style.centerContentStyle}>{timestr}</h5>
     ]
   }
   lineTag() {
@@ -41,7 +40,8 @@ export default class DepartureCard extends React.Component {
 
         <div style={style.departureCard.middleColumn}>
           <div style={style.departureCard.middleColumn.upperRow}>
-            {this.lineTag()} {this.props.departure.destination}
+            {this.lineTag()}
+            <div>{this.props.departure.destination}</div>
           </div>
           <div style={style.departureCard.middleColumn.lowerRow}>
             from <b>{this.props.departure.from.name}</b>
