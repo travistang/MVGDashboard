@@ -31,6 +31,12 @@ export default class Home extends Component<Props> {
   }
   getNextRefreshComponent() {
     let nextRefreshTime = this.getNextRefreshTime()
+    if(!this.props.shouldUpdate)
+      return (
+        <NavItem disabled>
+          Refresh Paused ({this.getNextRefreshTime()})
+        </NavItem>
+      )
     if(nextRefreshTime == 0)
       return (
         <NavItem disabled>
@@ -49,13 +55,16 @@ export default class Home extends Component<Props> {
       <Navbar fluid staticTop>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#home">MVG Dashboard</a>
+            MVG Dashboard
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
         {
           this.isStationLoaded() && this.getNextRefreshComponent()
         }
+          <NavItem onClick={this.props.toggleUpdate}>
+            {this.props.shouldUpdate?"Stop update":"Resume update"}
+          </NavItem>
         </Nav>
         <Nav pullRight>
           <NavItem eventKey={1} href="#">

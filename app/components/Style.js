@@ -16,6 +16,43 @@ let tokenList = {
 }
 export default {
   tokenList,
+
+  departureCard: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: "72px",
+    leftColumn: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems:'center'
+    },
+    middleColumn: {
+      flex: 4,
+
+      display: 'flex',
+      flexDirection: 'column',
+      upperRow: {
+        flex: 1,
+        fontWeight: "bold",
+      },
+      lowerRow: {
+        flex: 1,
+        fontSize: '9px',
+      }
+    },
+
+    rightColumn: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: "column",
+      alignItems: "flex-start",
+      upperRow: {
+        flex: 1,
+      }
+    }
+
+  },
+
   lineTag: {
 
     height: "16px",
@@ -76,9 +113,9 @@ export default {
   },
 
   mainContainer: {
-    // position: "absolute",
-    height: "100%",
-    top: 0,
+    position: "absolute",
+
+    top: "62px", // this is the offset for the nav bar
     width: "100%",
     bottom: 0,
     left: 0,
@@ -98,7 +135,7 @@ export default {
         ...underlineStyle,
       },
       bottomContainer: {
-        flex: 7,
+        flex: "7 1 75%", // 80% of the basis
         flexDirection: "column",
         display: "flex"
       }
@@ -114,6 +151,7 @@ export default {
       },
       bottomContainer: {
         flex: 1,
+        width: "100%",
       }
     }
   }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Home from '../components/Home';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import * as ClockAction from '../actions/clock'
 type Props = {};
 
 function mapStateToProps(state) {
@@ -12,4 +12,10 @@ function mapStateToProps(state) {
     ...state.mvg
   }
 }
-export default connect(mapStateToProps,null)(Home)
+
+function mapDispatchToProps(dispatch) {
+  return {
+    toggleUpdate: () => dispatch({type: ClockAction.TOGGLE_UPDATE})
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Home)

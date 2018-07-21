@@ -15,6 +15,7 @@ export function* resetClock() {
 export function* tick() {
 
   let stateClock = yield select(getClock)
+  let shouldUpdate = yield select(state => state.clock.shouldUpdate)
   // for every minute...
   // fetch station (subject to be changed)
 
@@ -23,7 +24,7 @@ export function* tick() {
     yield put({type: MVGAction.GET_STATIONS})
   }
   // TODO: what if get stations failed??
-  if(stateClock > 0 && stateClock % 60 == 0) {
+  if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
     // for all subsequent time...
     yield put({type: MVGAction.GET_DEPARTURES})
   }

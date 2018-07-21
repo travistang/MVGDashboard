@@ -1,8 +1,9 @@
-import {CLOCK_TICK,CLOCK_RESET} from '../actions/clock'
+import {CLOCK_TICK,CLOCK_RESET,TOGGLE_UPDATE} from '../actions/clock'
 
 const defaultState = {
   clock: 0,
-  currentTime: new Date()
+  currentTime: new Date(),
+  shouldUpdate: true,
 }
 export default function clock(state = defaultState,action) {
   switch(action.type) {
@@ -14,6 +15,11 @@ export default function clock(state = defaultState,action) {
         ...state,
         clock: state.clock + 1,
         currentTime: new Date()
+      }
+    case TOGGLE_UPDATE:
+      return {
+        ...state,
+        shouldUpdate: !state.shouldUpdate
       }
 
     default: return state

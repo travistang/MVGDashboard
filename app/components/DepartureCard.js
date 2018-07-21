@@ -1,43 +1,9 @@
 import React from 'react'
-// import style from './Style.js'
+import style from './Style.js'
 import LineTag from './LineTag'
 import PropTypes from 'prop-types'
 import * as Utils from '../utils/utils'
-let style = {
-  departureCard: {
-    display: 'flex',
-    flexDirection: 'row',
-    height: "72px",
-    leftColumn: {
-      flex: 1,
-    },
-    middleColumn: {
-      flex: 4,
 
-      display: 'flex',
-      flexDirection: 'column',
-      upperRow: {
-        flex: 1,
-        fontWeight: "bold",
-      },
-      lowerRow: {
-        flex: 1,
-        fontSize: '9px',
-      }
-    },
-
-    rightColumn: {
-      flex: 1,
-      display: 'flex',
-      flexDirection: "column",
-      alignItems: "flex-start",
-      upperRow: {
-        flex: 1,
-      }
-    }
-
-  }
-}
 export default class DepartureCard extends React.Component {
 
   departureTime() {
@@ -49,8 +15,14 @@ export default class DepartureCard extends React.Component {
   timeLeft() {
     let {hasPassed,hh,mm,ss} = Utils.timeDifferenceToDateString(this.props.currentTime,this.props.departure.departureTime)
     if (hasPassed) return `Gone`
-    if(hh > 0) return `${hh}:${mm}:${ss}`
-    else return `${mm}:${ss}`
+    let timestr
+    let pad = (s) => s.toString().padStart(2,'0')
+    if(hh > 0) timestr = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
+    else timestr = `${pad(mm)}:${pad(ss)}`
+    return [
+      <h6 style={style.centerContentStyle}> In </h6>,
+      <h5>{timestr}</h5>
+    ]
   }
   lineTag() {
     return (
