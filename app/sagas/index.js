@@ -24,6 +24,7 @@ export function* tick() {
 
   let stateClock = yield select(getClock)
   let shouldUpdate = yield select(state => state.clock.shouldUpdate)
+
   // for every minute...
   // fetch station (subject to be changed)
 
@@ -36,8 +37,9 @@ export function* tick() {
   if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
     // for all subsequent time...
     yield put({type: MVGAction.GET_DEPARTURES})
-    // trigger reload of all connection list 
-    yield put({type: DestinationAction.GET_DESTINATION_SUCCESS})
+    // trigger reload of all connection list
+    let destinations = yield select(state => state.destination.destinations)
+    yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
   }
   // tick the clock in all situation
   yield put({type: CLOCK_TICK})
