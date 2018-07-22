@@ -1,10 +1,11 @@
 import { takeLatest,takeEvery,delay } from "redux-saga"
 import { call, put,select,all,spawn } from "redux-saga/effects"
 import * as MVGAction from '../actions/mvg'
+import * as DestinationAction from '../actions/destination'
 import Api from './mvg'
 import {CLOCK_RESET,CLOCK_TICK} from '../actions/clock'
 import {watchGetDepartures,watchFetchStations,watchFetchStationsSuccess} from './mvg'
-import {storeDestinationWatcher,getDestination} from './destination'
+import {storeDestinationWatcher,getDestinationWatcher,clearDestinationWatcher} from './destination'
 const getClock = (state) => state.clock.clock
 //reset clock
 export function* resetClock() {
@@ -22,6 +23,7 @@ export function* tick() {
   if(stateClock == 0) {
     // only fetch at the beginning of the program
     yield put({type: MVGAction.GET_STATIONS})
+    yield put({type: DestinationAction.GET_DESTINATION})
   }
   // TODO: what if get stations failed??
   if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
@@ -43,7 +45,8 @@ export default function* rootSaga(getState) {
     watchGetDepartures(),
 
     storeDestinationWatcher(),
-    getDestination(),
+    clearDestinationWatcher(),
+    getDestinationWatcher(),
 
     watchFetchStationsSuccess(),
 

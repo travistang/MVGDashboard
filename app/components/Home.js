@@ -134,7 +134,7 @@ export default class Home extends Component<Props> {
   }
   departureList() {
     if(!this.props.departures.length) return (
-      <ImageWithText glyphicon="plus" text="No departures nearby" opacity={0.8} />
+      <ImageWithText glyphicon="exclamation-sign" text="No departures nearby" opacity={0.8} />
     )
     let indexFrom = this.state.numDeparturesShown * this.state.departurePage
     let indexTo = Math.min(this.props.departures.length,indexFrom + this.state.numDeparturesShown)
@@ -153,7 +153,7 @@ export default class Home extends Component<Props> {
     )
   }
   rightContainer() {
-
+    if(this.props.closest_stations.length == 0) return null
     return (
       <div style={style.mainContainer.rightContainer}>
         <div style={style.mainContainer.rightContainer.topContainer}>
