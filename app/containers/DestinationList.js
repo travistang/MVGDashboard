@@ -13,7 +13,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getDestinations: () => dispatch({type: DestinationAction.GET_DESTINATION}),
-    addDestination: () => dispatch({type: DestinationAction.ADD_DESTINATION}),
+    addDestination: (dest) => dispatch({type: DestinationAction.ADD_DESTINATION,station:dest}),
+    clearDestinations: () => dispatch({type: DestinationAction.CLEAR_DESTINATION})
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(DestinationListComponent)
