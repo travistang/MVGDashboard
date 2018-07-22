@@ -3,6 +3,7 @@
 import {takeLatest,takeEvery} from 'redux-saga'
 import { take,put,call,select,all } from "redux-saga/effects"
 import * as MVGAction from '../actions/mvg'
+import * as DestinationAction from '../actions/destination'
 import Api from '../api'
 import * as Utils from '../utils/utils'
 const apiInstance = new Api()
@@ -38,6 +39,28 @@ function* onFetchStationSuccess() {
   }
 }
 
+function* onGetConnection({target_station_id}) {
+  const getClosestStationsFromState = (state) => state.mvg.closest_stations
+  let closestStations = yield select(getClosestStationsFromState)
+
+  if(closestStations && closestStations.length) {
+    let closestStation = closestStations[0]
+    let from_station_id = closestStation.id
+    let connections = yield call(apiInstance.getConnection,from_station_id,target_station_id)
+
+    if(connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
+    else {
+      // now try to make the reducer's life easier
+      // indicate the DESTINATION of this list of connections
+      let connectionsListObj = {
+        // TODO: check here
+        destination: connections[0].to.id,
+        connections
+      }
+      yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})
+    }
+  }
+}
 function* onGetDepartures() {
   const getClosestStationsFromState = (state) => state.mvg.closest_stations
   let closestStations = yield select(getClosestStationsFromState)
@@ -51,6 +74,18 @@ function* onGetDepartures() {
     yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
   }
 }
+// callback for taking "GET_CONNECTION_SUCCESS" event from the destination actions.
+// yield all connections to connections FROM THE CLOSEST STATION once and for all
+// TODO: how about from all closest stations to all destinations?!
+export function* fetchConnectionsToAllStations(action) {
+  let destinations = action.destinations
+  // now destinations should be a list of stations, get the list...
+  let destinations_ids = destinations.map(d => d.id)
+  // invoke get connections actions given list of destinations ids, onGetConnection should do the rest
+  // (including the invocation of GET_CONNECTION_SUCCESS)
+  yield all(destinations_ids.map(id => call(onGetConnection,{target_station_id: id})))
+  
+}
 
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)
@@ -63,4 +98,15 @@ export function* watchGetDepartures() {
 // given a successful fetch of stations, trigger the closest point calculation
 export function* watchFetchStationsSuccess() {
   yield takeLatest(MVGAction.FETCH_STATION_SUCCESS,onFetchStationSuccess)
+}
+
+export function* watchGetConnections() {
+  // take every because multiple "GET_CONNECTION" action may be dispatched
+  yield takeEvery(MVGAction.GET_CONNECTION,onGetConnection)
+}
+
+// also watch when get destination success
+// because after the destination fetching success the connections to them needs to be explicitly fetched
+export function* watchGetDestinationSuccess() {
+  yield takeLatest(DestinationAction.GET_DESTINATION_SUCCESS,fetchConnectionsToAllStations)
 }

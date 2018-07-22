@@ -17,6 +17,10 @@ export default class {
   getStationsUnrestrictedEndpoint(name) {
     return `${this.endpoint}/location/queryWeb?q=${name}`
   }
+
+  getConnectionEndpoint(from_id,to_id) {
+    return `${this.endpoint}/routing/?fromStation=${from_id}&toStation=${to_id}`
+  }
   // useful functions
   async getAllStations() {
     let url = this.getStationsUnrestrictedEndpoint("")
@@ -28,6 +32,13 @@ export default class {
     }
 
   }
+  async getConnections(from_id,to_id) {
+    let url = this.getConnectionEndpoint(from_id,to_id)
+    let response = await this.performRequest(url)
+    if(response.error || !response.connectionList) return response
+    return response.connectionList // the "connectionPartList" inside each element will be useful
+  }
+  
   async getDepartureById(id,numDepartures = -1) {
     let url = this.getDepartureEndpointById(id)
     let response = await this.performRequest(url)

@@ -5,6 +5,10 @@ const defaultState = {
   closest_stations: [],
   departures: [],
   error: null,
+  // this is the connections object that stores the connections between one station to another
+  // the key of it would be the ID OF DESTINATION of the connection
+  // value would be the LIST of connections possible to reach this destination
+  connections: {}
 }
 export default function mvg(state = defaultState,action) {
   switch(action.type) {
@@ -24,6 +28,16 @@ export default function mvg(state = defaultState,action) {
       return {...state,lat: action.lat,lng: action.lng}
     case MVGAction.GET_DEPARTURES_SUCCESS:
       return {...state,departures: action.departures}
+    case MVGAction.GET_CONNECTION_FAILED:
+      return {...state,error: action.error}
+    case MVGAction.GET_CONNECTION_SUCCESS:
+      return {
+        ...state,
+        connections: {
+        ...state.connections,
+        ...action.connections
+        }
+      }
     default: return state
   }
 }
