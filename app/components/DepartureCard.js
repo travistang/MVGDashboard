@@ -11,15 +11,19 @@ export default class DepartureCard extends React.Component {
       .unixTimeStampToDateHHMM(this.props.departure.departureTime)
 
   }
+  isGone() {
+    let {hasPassed} = Utils.timeDifferenceToDateString(this.props.currentTime,this.props.departure.departureTime)
+    return hasPassed
+  }
   timeLeft() {
-    let {hasPassed,hh,mm,ss} = Utils.timeDifferenceToDateString(this.props.currentTime,this.props.departure.departureTime)
-    if (hasPassed) return `Gone`
+    if (this.isGone()) return <h6 style={{...style.centerContentStyle,color: "red"}}> Gone </h6>
+    let {hh,mm,ss} = Utils.timeDifferenceToDateString(this.props.currentTime,this.props.departure.departureTime)
     let timestr
     let pad = (s) => s.toString().padStart(2,'0')
     if(hh > 0) timestr = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
     else timestr = `${pad(mm)}:${pad(ss)}`
     return [
-      <h6 style={style.centerContentStyle}> In </h6>,
+      <h6 style={style.centerContentStyle}> IN </h6>,
       <h5 style={style.centerContentStyle}>{timestr}</h5>
     ]
   }
@@ -33,7 +37,7 @@ export default class DepartureCard extends React.Component {
   }
   render() {
     return (
-      <div style={style.departureCard}>
+      <div style={{...style.departureCard,opacity: (this.isGone())?0.5:1}}>
         <div style={style.departureCard.leftColumn}>
           {this.timeLeft()}
         </div>

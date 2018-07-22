@@ -16,7 +16,38 @@ let tokenList = {
 }
 export default {
   tokenList,
+  app: {
+    display: "flex",
+    flexDirection: "column",
+
+  },
+  destinationList: {
+    header: {
+      display: "flex",
+      flex: "1 0 10%",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
+
+    },
+    destinationContainer: {
+      margin: 16,
+      flex: "1 0 65%"
+    },
+    pagination: {
+      flex: "1 0 10%"
+    },
+
+  },
   destinationCard: {
+    display: "flex",
+    flexDirection:"column",
+    upperRow: {
+      display: "flex",
+      alignItems: "center",
+      name: {
+        paddingLeft: "16px"
+      }
+    },
     input: {
       container: {
         position: 'relative'
@@ -172,6 +203,7 @@ export default {
   },
 
   mainContainer: {
+    flex: 1,
     position: "absolute",
 
     top: "62px", // this is the offset for the nav bar
@@ -188,17 +220,18 @@ export default {
       ...centerContentStyle,
       flexDirection: "column",
       topContainer: {
-        flex: 1,
+        flex: "1 0 20%",
         flexDirection: "column",
         width: "100%",
         // paddingLeft: "10%",
         ...underlineStyle,
       },
       bottomContainer: {
-        flex: "7 1 75%", // 80% of the basis
+        flex: "1 0 80%", // 80% of the basis
         flexDirection: "column",
         width: "100%",
-        display: "flex"
+        display: "flex",
+        overflowY: "hidden"
       }
     },
     rightContainer: {
@@ -216,6 +249,7 @@ export default {
       middleContainer: {
         flex: "4",
         width: "100%",
+        overflowY: "hidden",
       },
       bottomContainer: {
         flex: "1",

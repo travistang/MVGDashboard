@@ -26,7 +26,7 @@ export default class Home extends Component<Props> {
     super(props)
 
     this.state = {
-      numDeparturesShown: 10,
+      numDeparturesShown: 5,
       departurePage: 1,
     }
   }
@@ -136,7 +136,7 @@ export default class Home extends Component<Props> {
     if(!this.props.departures.length) return (
       <ImageWithText glyphicon="exclamation-sign" text="No departures nearby" opacity={0.8} />
     )
-    let indexFrom = this.state.numDeparturesShown * this.state.departurePage
+    let indexFrom = this.state.numDeparturesShown * (this.state.departurePage - 1)
     let indexTo = Math.min(this.props.departures.length,indexFrom + this.state.numDeparturesShown)
     return this.props.departures
       .slice(indexFrom,indexTo)
@@ -172,7 +172,7 @@ export default class Home extends Component<Props> {
   render() {
     return (
 
-      <div>
+      <div style={style.app}>
         {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
         <div style={style.mainContainer}>

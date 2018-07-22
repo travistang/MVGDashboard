@@ -15,8 +15,9 @@ function mapDispatchToProps(dispatch) {
   return {
     getDestinations: () => dispatch({type: DestinationAction.GET_DESTINATION}),
     addDestination: (dest) => dispatch({type: DestinationAction.ADD_DESTINATION,station: dest}),
+    clearDestinations: () => dispatch({type: DestinationAction.CLEAR_DESTINATION}),
+    
     refereshRoute: (target_station_id) => dispatch({type: MVGAction.GET_DESTINATION,target_station_id})
-    clearDestinations: () => dispatch({type: DestinationAction.CLEAR_DESTINATION})
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(DestinationListComponent)

@@ -4,14 +4,18 @@ import ImageWithText from './ImageWithText'
 import DestinationCard from '../containers/DestinationCard'
 import * as DestinationAction from '../actions/destination'
 import {
-  Button
+  Button,
+  Pagination,
 } from 'react-bootstrap'
+import * as Utils from '../utils/utils'
 
 export default class DestinationList extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
+      numDestinationShown: 3,
+      currentPage: 1,
       isAddingNewDestination: false,
     }
     // get destinations and they will be stored in the store
@@ -21,20 +25,24 @@ export default class DestinationList extends React.Component {
   header() {
     // if(this.props.destinations.length == 0 && !this.state.isAddingNewDestination) return null
     return (
-      <div>
+      <div style={style.destinationList.header}>
         <h2> Time to Destination </h2>
-        <Button onClick={this.props.clearDestinations}> Remove All </Button>
+        <a onClick={this.clearDestinations.bind(this)}>
+          <div href="#" > Remove All </div>
+        </a>
       </div>
     )
+  }
+  clearDestinations(e) {
+    e.preventDefault()
+    this.props.clearDestinations()
   }
   displayAddDestinationCell() {
     if(this.state.isAddingNewDestination) return
     this.setState({...this.state,isAddingNewDestination: true})
 
   }
-  addNewDestinationButton() {
-    return <ImageWithText onClick={this.displayAddDestinationCell.bind(this)} opacity={0.5} glyphicon="plus" text="Click to add a new destination" />
-  }
+
   editComponent() {
     return <DestinationCard isEditing={true} onSelect={this.addDestination.bind(this)} />
   }
@@ -43,21 +51,48 @@ export default class DestinationList extends React.Component {
     this.props.addDestination(station)
     this.setState({isAddingNewDestination: false})
   }
-
-  destinationComponents() {
-    console.log('destination list')
-    console.log(this.props.destinations)
-    return (this.props.destinations.map(dest => <div> {dest.name} </div>))
+  addNewDestinationButton() {
+    return <ImageWithText onClick={this.displayAddDestinationCell.bind(this)} opacity={0.5} glyphicon="plus" text="Click to add a new destination" />
   }
+  destinationComponents() {
+    let indexFrom = this.state.numDestinationShown * (this.state.currentPage - 1)
+    let indexTo = indexFrom + this.state.numDestinationShown
+    return (
+      <div style={style.destinationList.destinationContainer}>
+        {this.props.destinations
+          .map(dest => <DestinationCard station={dest} />)
+          // lol!
+          .concat(this.state.isAddingNewDestination?this.editComponent():null)
+          .concat(this.addNewDestinationButton())
+          .filter(component => !!component) // not null
+          .slice(indexFrom,indexTo)
+        }
+      </div>
+    )
+  }
+  paginationComponent() {
+    let numComponents = this.props.destinations.length + 1 // with add new component
+    if(this.state.isAddingNewDestination) numComponents++
+    let numPageNeeded = Math.ceil(numComponents / this.state.numDestinationShown)
+    if(numPageNeeded <= 1) return null // why do you need pagination if theres just a page..?
+    return (
+      <div style={style.destinationList.pagination}>
+        <Pagination>
+          {Utils.listOfN(numPageNeeded).map(n =>
+            <Pagination.Item onClick={() => this.setState({...this.state,currentPage: n})}> {n} </Pagination.Item>
+          )}
+        </Pagination>
+      </div>
 
+    )
+  }
   render() {
     return (
       <div style={style.mainContainer.leftContainer.bottomContainer}>
         {this.header()}
         {this.destinationComponents()}
-        {this.state.isAddingNewDestination && this.editComponent()}
-        {this.addNewDestinationButton()}
 
+        {this.props.destinations.length && this.paginationComponent()}
       </div>
     )
   }

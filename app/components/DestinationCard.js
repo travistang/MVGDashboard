@@ -76,6 +76,7 @@ export default class DestinationCard extends React.Component {
       onChange: this.onChange,
       onBlur: this.onBlur
     }
+    if(this.isEdit())
     return (
       <Well bsSize="large">
         <Form inline>
@@ -91,6 +92,18 @@ export default class DestinationCard extends React.Component {
             />
           </FormGroup>
         </Form>
+      </Well>
+    )
+    return (
+      <Well>
+        <div style={style.destinationCard}>
+          <div style={style.destinationCard.upperRow}>
+            to <h4 style={style.destinationCard.upperRow.name}> {this.props.station.name} </h4>
+          </div>
+          <div style={style.destinationCard.lowerRow}>
+            connection list here
+          </div>
+        </div>
       </Well>
     )
   }
