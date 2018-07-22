@@ -52,7 +52,8 @@ export default {
       }
     },
     lowerRow: {
-      display: "flex"
+      display: "flex",
+      alignItems: "center"
     },
     input: {
       container: {

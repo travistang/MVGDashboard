@@ -6,15 +6,28 @@ import * as MVGAction from '../actions/mvg'
 import * as DestinationAction from '../actions/destination'
 import Api from '../api'
 import * as Utils from '../utils/utils'
+import {getPromise,setPromise} from '../api/destination'
 const apiInstance = new Api()
-export function* fetchStation() {
-  let stations = yield call(apiInstance.getAllStations.bind(apiInstance))
 
-  if(stations.error) {
-    yield put({type: MVGAction.FETCH_STATION_FAILED,error: error})
+export function* fetchStation() {
+  let stations
+  let storeKey = "stations"
+  stations = yield call(getPromise,storeKey)
+  if(Object.keys(stations).length == 0) {
+    // no stations stored in local storage, fetch from internet
+    stations = yield call(apiInstance.getAllStations.bind(apiInstance))
+    if(stations.error) {
+      yield put({type: MVGAction.FETCH_STATION_FAILED,error: error})
+    } else {
+      yield put({type: MVGAction.FETCH_STATION_SUCCESS, stations})
+      yield call(setPromise,storeKey,stations)
+    }
+
   } else {
-    yield put({type: MVGAction.FETCH_STATION_SUCCESS, stations})
+    // get from store
+    yield put({type: MVGAction.FETCH_STATION_SUCCESS,stations})
   }
+
 }
 function getGeoLocation() {
   return {
