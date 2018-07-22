@@ -153,7 +153,7 @@ export default class Home extends Component<Props> {
     )
   }
   rightContainer() {
-
+    if(this.props.closest_stations.length == 0) return null
     return (
       <div style={style.mainContainer.rightContainer}>
         <div style={style.mainContainer.rightContainer.topContainer}>
