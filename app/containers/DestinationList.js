@@ -14,8 +14,13 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getDestinations: () => dispatch({type: DestinationAction.GET_DESTINATION}),
+<<<<<<< HEAD
     addDestination: () => dispatch({type: DestinationAction.ADD_DESTINATION}),
     refereshRoute: (target_station_id) => dispatch({type: MVGAction.GET_DESTINATION,target_station_id})
+=======
+    addDestination: (dest) => dispatch({type: DestinationAction.ADD_DESTINATION,station:dest}),
+    clearDestinations: () => dispatch({type: DestinationAction.CLEAR_DESTINATION})
+>>>>>>> master
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(DestinationListComponent)
