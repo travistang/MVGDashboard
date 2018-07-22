@@ -40,22 +40,25 @@ function* onFetchStationSuccess() {
 }
 
 function* onGetConnection({target_station_id}) {
+  console.log('on get connection!')
   const getClosestStationsFromState = (state) => state.mvg.closest_stations
   let closestStations = yield select(getClosestStationsFromState)
 
   if(closestStations && closestStations.length) {
     let closestStation = closestStations[0]
     let from_station_id = closestStation.id
-    let connections = yield call(apiInstance.getConnection,from_station_id,target_station_id)
-
+    let connections = yield call(
+      apiInstance.getConnections.bind(apiInstance),
+      from_station_id,target_station_id)
+      console.log('got connections')
+      console.log(connections)
     if(connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
     else {
       // now try to make the reducer's life easier
       // indicate the DESTINATION of this list of connections
       let connectionsListObj = {
         // TODO: check here
-        destination: connections[0].to.id,
-        connections
+        [connections[0].to.id]: connections
       }
       yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})
     }
@@ -77,14 +80,15 @@ function* onGetDepartures() {
 // callback for taking "GET_CONNECTION_SUCCESS" event from the destination actions.
 // yield all connections to connections FROM THE CLOSEST STATION once and for all
 // TODO: how about from all closest stations to all destinations?!
-export function* fetchConnectionsToAllStations(action) {
+function* fetchConnectionsToAllStations(action) {
+  console.log('fetch all stations connections!')
   let destinations = action.destinations
   // now destinations should be a list of stations, get the list...
   let destinations_ids = destinations.map(d => d.id)
   // invoke get connections actions given list of destinations ids, onGetConnection should do the rest
   // (including the invocation of GET_CONNECTION_SUCCESS)
   yield all(destinations_ids.map(id => call(onGetConnection,{target_station_id: id})))
-  
+
 }
 
 export function* watchFetchStations() {

@@ -64,19 +64,22 @@ export default class Home extends Component<Props> {
             MVG Dashboard
           </Navbar.Brand>
         </Navbar.Header>
-        <Nav>
-        {
-          this.isStationLoaded() && this.getNextRefreshComponent()
-        }
-          <NavItem onClick={this.props.toggleUpdate}>
-            {this.props.shouldUpdate?"Stop update":"Resume update"}
-          </NavItem>
-        </Nav>
-        <Nav pullRight>
-          <NavItem eventKey={1} href="#">
-            {this.props.currentTime.toLocaleString()}
-          </NavItem>
-        </Nav>
+        <Navbar.Collapse>
+          <Nav>
+          {
+            this.isStationLoaded() && this.getNextRefreshComponent()
+          }
+            <NavItem onClick={this.props.toggleUpdate}>
+              {this.props.shouldUpdate?"Stop update":"Resume update"}
+            </NavItem>
+          </Nav>
+          <Nav pullRight>
+            <NavItem eventKey={1} href="#">
+              {this.props.currentTime.toLocaleString()}
+            </NavItem>
+          </Nav>
+        </Navbar.Collapse>
+
       </Navbar>)
   }
   isStationLoaded() {

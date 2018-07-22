@@ -33,10 +33,7 @@ export default function mvg(state = defaultState,action) {
     case MVGAction.GET_CONNECTION_SUCCESS:
       return {
         ...state,
-        connections: {
-        ...state.connections,
-        ...action.connections
-        }
+        connections: {...state.connections,...action.connections}
       }
     default: return state
   }

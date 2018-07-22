@@ -4,7 +4,13 @@ import * as MVGAction from '../actions/mvg'
 import * as DestinationAction from '../actions/destination'
 import Api from './mvg'
 import {CLOCK_RESET,CLOCK_TICK} from '../actions/clock'
-import {watchGetDepartures,watchFetchStations,watchFetchStationsSuccess} from './mvg'
+import {
+  watchGetDepartures,
+  watchFetchStations,
+  watchGetConnections,
+  watchFetchStationsSuccess,
+  watchGetDestinationSuccess,
+} from './mvg'
 import {storeDestinationWatcher,getDestinationWatcher,clearDestinationWatcher} from './destination'
 const getClock = (state) => state.clock.clock
 //reset clock
@@ -43,12 +49,13 @@ export default function* rootSaga(getState) {
   yield [
     watchFetchStations(),
     watchGetDepartures(),
+    watchGetConnections(),
+    watchFetchStationsSuccess(),
+    watchGetDestinationSuccess(),
 
     storeDestinationWatcher(),
     clearDestinationWatcher(),
     getDestinationWatcher(),
-
-    watchFetchStationsSuccess(),
 
     mainLoop()
   ]

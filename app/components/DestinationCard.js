@@ -3,12 +3,14 @@ import PropTypes from 'prop-types'
 import style from './Style.js'
 import LineTag from './LineTag'
 import Autosuggest from 'react-autosuggest';
+
 import {
   Well,
   Button,
   Form,
   FormGroup,
-  InputGroup
+  InputGroup,
+  Glyphicon,
 } from 'react-bootstrap'
 export default class DestinationCard extends React.Component {
   constructor(props) {
@@ -18,6 +20,44 @@ export default class DestinationCard extends React.Component {
       suggestions: [],
     }
 
+  }
+  getConnections() {
+    // first check if we have "fastest connection" at all..
+    let id = this.props.station.id
+    if(!this.props.connections[id]) return null
+    // get the list of our connections, then get the fastest one
+    let connections = this.props.connections[id]
+      .sort((conA,conB) => conA.arrival - conB.arrival)
+
+    return connections
+
+  }
+  // if theres a connection for this dest,
+  // return something like u1 -> s3 -> ...
+  getFastestConnectionDisplayComponents() {
+    let connections = this.getConnections()
+    if(!connections) return (<h6> Fetching connections... </h6>)
+
+    // get the fastest connection
+    let connection = connections[0]
+    // prepare intermediate component
+    let intermediateComponent = <Glyphicon glyph="arrow-right" />
+    let walkingComponent = <Glyphicon glyph="piggy-bank" /> // i found no pedestrian icon, just a pig there:)
+    // get the "connection parts" of this connection, convert them to components
+    let partComponents = connection.connectionPartList.map(part => {
+      if(part.connectionPartType == "FOOTWAY") return walkingComponent // sorry you have to walk...
+      else { // i think this is a transportation, now lets look at the part..
+        let label = part.label
+        // TODO: how to properly get the color of this transport!?
+        let color = '#222'
+        return <LineTag backgroundColor={color} line={label} />
+      }
+    })
+    .map(part => <div style={style.destinationCard.transportationList}> {part} </div>)
+    // make the "intermediateComponent" (i.e. arrow) and part components go one after another
+    let res = partComponents.reduce((list,part) => list.concat(part,intermediateComponent),[])
+    res.pop()
+    return res
   }
   // you have the selection, now get back the station obj
   getStationObjFromName(val) {
@@ -58,6 +98,7 @@ export default class DestinationCard extends React.Component {
       .map(s => ({...s,name: s.name.trim().toLowerCase()}))
       .map(s => ({...s,order: s.name.indexOf(searchString)}))
       .filter(s => s.order != -1)
+      .filter(s => !this.props.destinations.some(dest => dest.id == s.id)) // dont add the stations again
       .sort((sa,sb) => sa.order - sb.order)
       .slice(0,15)
     this.setState({
@@ -101,7 +142,7 @@ export default class DestinationCard extends React.Component {
             to <h4 style={style.destinationCard.upperRow.name}> {this.props.station.name} </h4>
           </div>
           <div style={style.destinationCard.lowerRow}>
-            connection list here
+            {this.getFastestConnectionDisplayComponents()}
           </div>
         </div>
       </Well>

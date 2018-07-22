@@ -5,7 +5,8 @@ import DestinationCard from '../components/DestinationCard'
 function mapStateToProps(state) {
   return {
     stationsList: state.mvg.stations,
-    destinations: state.destination.destinations
+    destinations: state.destination.destinations,
+    connections: state.mvg.connections
   }
 }
 

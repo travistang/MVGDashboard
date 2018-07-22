@@ -41,12 +41,18 @@ export default {
   destinationCard: {
     display: "flex",
     flexDirection:"column",
+    transportationList: {
+      margin: 8,
+    },
     upperRow: {
       display: "flex",
       alignItems: "center",
       name: {
         paddingLeft: "16px"
       }
+    },
+    lowerRow: {
+      display: "flex"
     },
     input: {
       container: {
