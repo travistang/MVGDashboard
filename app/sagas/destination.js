@@ -42,9 +42,11 @@ export function* storeDestination(action) {
 
 
 export function* getDestination() {
-  console.log('getting destination in saga')
   try {
     let destinations = yield call(getPromise,destinationStorageFieldKey)
+    console.log('got destination:')
+    console.log(destinations)
+    if(Object.keys(destinations).length == 0) destinations = []
     yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
   }catch(e) {
     yield put({type: DestinationAction.GET_DESTINATION_FAILED,error: e})
