@@ -27,14 +27,10 @@ export function* storeDestination(action) {
       // no destination added
       destinations = []
     }
-    console.log('destination right before store')
-    console.log(destinations)
     destinations.push(station)
     let {key,data} = yield call(setPromise,destinationStorageFieldKey,destinations)
     yield put({type: DestinationAction.ADD_DESTINATION_SUCCESS,station})
   } catch(e) {
-    console.log(`storing destination failed with reason:`)
-    console.log(e)
     yield put({type: DestinationAction.ADD_DESTINATION_FAILED,error:e})
   }
 

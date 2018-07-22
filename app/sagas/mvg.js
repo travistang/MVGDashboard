@@ -63,8 +63,6 @@ function* onGetConnection({target_station_id}) {
     let connections = yield call(
       apiInstance.getConnections.bind(apiInstance),
       from_station_id,target_station_id)
-      console.log('got connections')
-      console.log(connections)
     if(connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
     else {
       // now try to make the reducer's life easier
@@ -76,6 +74,9 @@ function* onGetConnection({target_station_id}) {
       yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})
     }
   }
+}
+function* onAddDestinationSuccess(action) {
+  yield call(onGetConnection,{target_station_id: action.station.id})
 }
 function* onGetDepartures() {
   const getClosestStationsFromState = (state) => state.mvg.closest_stations
@@ -126,4 +127,10 @@ export function* watchGetConnections() {
 // because after the destination fetching success the connections to them needs to be explicitly fetched
 export function* watchGetDestinationSuccess() {
   yield takeLatest(DestinationAction.GET_DESTINATION_SUCCESS,fetchConnectionsToAllStations)
+}
+
+// also need to watch a successful add of destination...
+// because the connections of the new dest needs to be fetched immediately..
+export function* watchAddDestinationSuccess() {
+  yield takeEvery(DestinationAction.ADD_DESTINATION_SUCCESS,onAddDestinationSuccess)
 }

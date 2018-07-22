@@ -10,6 +10,7 @@ import {
   watchGetConnections,
   watchFetchStationsSuccess,
   watchGetDestinationSuccess,
+  watchAddDestinationSuccess,
 } from './mvg'
 import {storeDestinationWatcher,getDestinationWatcher,clearDestinationWatcher} from './destination'
 const getClock = (state) => state.clock.clock
@@ -52,6 +53,7 @@ export default function* rootSaga(getState) {
     watchGetConnections(),
     watchFetchStationsSuccess(),
     watchGetDestinationSuccess(),
+    watchAddDestinationSuccess(),
 
     storeDestinationWatcher(),
     clearDestinationWatcher(),
