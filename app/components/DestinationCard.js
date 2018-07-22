@@ -11,6 +11,7 @@ import {
   FormGroup,
   InputGroup,
   Glyphicon,
+  ControlLabel
 } from 'react-bootstrap'
 export default class DestinationCard extends React.Component {
   constructor(props) {
@@ -122,6 +123,9 @@ export default class DestinationCard extends React.Component {
       <Well bsSize="large">
         <Form inline>
           <FormGroup>
+            <ControlLabel>
+              Station Name:
+            </ControlLabel>
             <Autosuggest
               suggestions={suggestions}
               onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
@@ -131,6 +135,9 @@ export default class DestinationCard extends React.Component {
               inputProps={inputProps}
               theme={style.destinationCard.input}
             />
+            <Button onClick={this.props.onCancel}>
+              <Glyphicon glyph="remove" />
+            </Button>
           </FormGroup>
         </Form>
       </Well>

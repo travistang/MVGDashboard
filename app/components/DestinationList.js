@@ -42,9 +42,16 @@ export default class DestinationList extends React.Component {
     this.setState({...this.state,isAddingNewDestination: true})
 
   }
-
+  cancelAdd() {
+    this.setState({...this.state,isAddingNewDestination: false})
+  }
   editComponent() {
-    return <DestinationCard isEditing={true} onSelect={this.addDestination.bind(this)} />
+    return (
+      <DestinationCard isEditing={true}
+        onCancel={this.cancelAdd.bind(this)}
+        onSelect={this.addDestination.bind(this)}
+      />
+    )
   }
   addDestination(station) {
 

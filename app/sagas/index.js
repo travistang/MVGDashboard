@@ -36,6 +36,8 @@ export function* tick() {
   if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
     // for all subsequent time...
     yield put({type: MVGAction.GET_DEPARTURES})
+    // trigger reload of all connection list 
+    yield put({type: DestinationAction.GET_DESTINATION_SUCCESS})
   }
   // tick the clock in all situation
   yield put({type: CLOCK_TICK})
