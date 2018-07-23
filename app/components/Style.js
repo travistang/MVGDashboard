@@ -1,4 +1,10 @@
 // common styles
+let color = {
+  blue: "#375a7f",
+  indigo: "#6610f2",
+  red: "#E74C3C",
+  green: "#00bc8c"
+}
 let centerContentStyle = {
   display: "flex",
   alignItems: "center",
@@ -48,6 +54,12 @@ export default {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      remove: {
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      },
       left: {
         flex: 3,
         display: "flex",

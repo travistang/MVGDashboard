@@ -22,3 +22,11 @@ export const clearPromise = (key) => new Promise((resolve,reject) => {
     else resolve()
   })
 })
+
+export const removePromise = (key,id) => {
+  return getPromise(key)
+    .then(stations => {
+      let newStations = stations.filter(s => s.id != id)
+      return setPromise(key,newStations)
+    })
+}

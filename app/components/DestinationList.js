@@ -17,6 +17,7 @@ export default class DestinationList extends React.Component {
       numDestinationShown: 2,
       currentPage: 1,
       isAddingNewDestination: false,
+      isRemoving: false,
     }
     // get destinations and they will be stored in the store
     this.props.getDestinations()
@@ -27,11 +28,36 @@ export default class DestinationList extends React.Component {
     return (
       <div style={style.destinationList.header}>
         <h2> Time to Destination </h2>
-        <a onClick={this.clearDestinations.bind(this)}>
-          <div href="#" > Remove All </div>
-        </a>
+        {
+          !this.state.isRemoving?(
+            <a onClick={this.removeDestinations.bind(this)}>
+              <div href="#" > Remove </div>
+            </a>
+          ): (
+            [<a onClick={this.clearDestinations.bind(this)}>
+              <div href="#" > Remove All </div>
+            </a>,
+            <a onClick={this.cancelRemoveDestinations.bind(this)}>
+              <div href="#" > Cancel </div>
+            </a>]
+          )
+        }
+
       </div>
     )
+  }
+  removeDestinations() {
+    this.setState({
+      ...this.state,
+      isRemoving: true,
+      numDestinationShown: 4, // can show more as its slimmer
+      isAddingNewDestination: false})
+  }
+  cancelRemoveDestinations() {
+    this.setState({
+      ...this.state,
+      numDestinationShown: 2, // cannot show more as its bigger..
+      isRemoving: false})
   }
   clearDestinations(e) {
     e.preventDefault()
@@ -68,10 +94,10 @@ export default class DestinationList extends React.Component {
     return (
       <div style={style.destinationList.destinationContainer}>
         {this.props.destinations
-          .map(dest => <DestinationCard station={dest} />)
+          .map(dest => <DestinationCard onRemove={() => this.props.removeDestination(dest.id)} isRemoving={this.state.isRemoving} station={dest} />)
           // lol!
           .concat(this.state.isAddingNewDestination?this.editComponent():null)
-          .concat(this.addNewDestinationButton())
+          .concat(this.state.isRemoving?null:this.addNewDestinationButton())
           .filter(component => !!component) // not null
           .slice(indexFrom,indexTo)
         }
@@ -79,7 +105,8 @@ export default class DestinationList extends React.Component {
     )
   }
   paginationComponent() {
-    let numComponents = this.props.destinations.length + 1 // with add new component
+    let numComponents = this.props.destinations.length
+    if(!this.state.isRemoving) numComponents++ // with add new component
     if(this.state.isAddingNewDestination) numComponents++
     let numPageNeeded = Math.ceil(numComponents / this.state.numDestinationShown)
     if(numPageNeeded <= 1) return null // why do you need pagination if theres just a page..?

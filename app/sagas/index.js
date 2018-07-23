@@ -12,7 +12,12 @@ import {
   watchGetDestinationSuccess,
   watchAddDestinationSuccess,
 } from './mvg'
-import {storeDestinationWatcher,getDestinationWatcher,clearDestinationWatcher} from './destination'
+import {
+  storeDestinationWatcher,
+  getDestinationWatcher,
+  clearDestinationWatcher,
+  removeDestinationWatcher,
+} from './destination'
 const getClock = (state) => state.clock.clock
 //reset clock
 export function* resetClock() {
@@ -62,6 +67,7 @@ export default function* rootSaga(getState) {
     storeDestinationWatcher(),
     clearDestinationWatcher(),
     getDestinationWatcher(),
+    removeDestinationWatcher(),
 
     mainLoop()
   ]

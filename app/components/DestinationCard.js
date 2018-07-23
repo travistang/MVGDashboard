@@ -168,25 +168,35 @@ export default class DestinationCard extends React.Component {
       </Well>
     )
     // component that renders travel time of this connection
-
     return (
       <Well bsSize="small">
         <div style={style.destinationCard}>
           <div style={style.destinationCard.upperRow}>
             <div style={style.destinationCard.upperRow.left}>
-              <h6>to</h6> <h4 style={style.destinationCard.upperRow.left.name}> {this.props.station.name} </h4>
+              {!this.props.isRemoving && <h6>to</h6>} <h4 style={style.destinationCard.upperRow.left.name}> {this.props.station.name} </h4>
             </div>
-            {this.getTravelTimeComponent()}
+            {this.props.isRemoving?this.getRemoveComponent():this.getTravelTimeComponent()}
           </div>
-          <div style={style.destinationCard.lowerRow}>
-            {this.getFastestConnectionDisplayComponents()}
-          </div>
+          { !this.props.isRemoving &&
+            (<div style={style.destinationCard.lowerRow}>
+              {this.getFastestConnectionDisplayComponents()}
+            </div>)
+          }
         </div>
       </Well>
     )
   }
   isEdit() {
     return !this.props.station
+  }
+  getRemoveComponent() {
+    return (
+      <div style={style.destinationCard.upperRow.remove}>
+        <Button bsStyle="danger" onClick={this.props.onRemove}>
+          <Glyphicon glyph="trash" />
+        </Button>
+      </div>
+    )
   }
 }
 

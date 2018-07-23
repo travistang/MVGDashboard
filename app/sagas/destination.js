@@ -3,7 +3,7 @@ import { take,put,call,select } from "redux-saga/effects"
 
 import * as MVGAction from '../actions/mvg'
 import * as DestinationAction from '../actions/destination'
-import {getPromise,setPromise,clearPromise} from '../api/destination'
+import {getPromise,setPromise,clearPromise,removePromise} from '../api/destination'
 
 import Api from '../api'
 
@@ -48,6 +48,16 @@ export function* getDestination() {
     yield put({type: DestinationAction.GET_DESTINATION_FAILED,error: e})
   }
 }
+export function* removeDestination(action) {
+  try {
+    let id = action.id
+    yield call(removePromise,destinationStorageFieldKey,id)
+    yield put({type: DestinationAction.GET_DESTINATION})
+    yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS})
+  } catch(e) {
+    yield put({type: DestinationAction.REMOVE_DESTINATION_FAILED,error: e})
+  }
+}
 export function* storeDestinationWatcher() {
   yield takeEvery(DestinationAction.ADD_DESTINATION,storeDestination)
 }
@@ -57,4 +67,8 @@ export function* getDestinationWatcher() {
 
 export function* clearDestinationWatcher() {
   yield takeLatest(DestinationAction.CLEAR_DESTINATION,clearDestination)
+}
+
+export function* removeDestinationWatcher() {
+  yield takeLatest(DestinationAction.REMOVE_DESTINATION,removeDestination)
 }
