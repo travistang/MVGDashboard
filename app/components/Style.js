@@ -24,17 +24,17 @@ export default {
   destinationList: {
     header: {
       display: "flex",
-      flex: "1 0 10%",
+      flex: "0 0 10%",
       justifyContent: "space-between",
       alignItems: "flex-end",
 
     },
     destinationContainer: {
       margin: 16,
-      flex: "1 0 65%"
+      flex: "0 0 65%"
     },
     pagination: {
-      flex: "1 0 10%"
+      flex: "0 0 10%"
     },
 
   },
@@ -47,8 +47,28 @@ export default {
     upperRow: {
       display: "flex",
       alignItems: "center",
-      name: {
-        paddingLeft: "16px"
+      justifyContent: "space-between",
+      left: {
+        flex: 3,
+        display: "flex",
+        alignItems: "center",
+        name: {
+          paddingLeft: "16px"
+        },
+      },
+
+      right: {
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "right",
+        up: {
+          flex: 1,
+          fontWeight: "bold",
+        },
+        down: {
+          flex: 1,
+        }
       }
     },
     lowerRow: {

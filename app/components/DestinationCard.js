@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import style from './Style.js'
 import LineTag from './LineTag'
 import Autosuggest from 'react-autosuggest';
-
+import * as Utils from '../utils/utils'
 import {
   Well,
   Button,
@@ -28,20 +28,22 @@ export default class DestinationCard extends React.Component {
     if(!this.props.connections[id]) return null
     // get the list of our connections, then get the fastest one
     let connections = this.props.connections[id]
+      .filter(conn => conn.departure > this.props.currentTime) // at least the train should still be here...
       .sort((conA,conB) => conA.arrival - conB.arrival)
-
-    return connections
+      return connections
 
   }
-  // if theres a connection for this dest,
-  // return something like u1 -> s3 -> ...
-  getFastestConnectionDisplayComponents() {
+  // this is a "placeholder" for the connections when the requested one is not available
+  getConnectionLoadingComponent() {
+    return (<h6> Fetching connections... </h6>)
+  }
+  // get the n-th connection component, sorted by time of ARRIVAL
+  getConnectionDisplayComponents(n){
     let connections = this.getConnections()
-    if(!connections) return (<h6> Fetching connections... </h6>)
+    if(!connections || n >= connections.length) return this.getConnectionLoadingComponent()
 
-    // get the fastest connection
-    let connection = connections[0]
-    // prepare intermediate component
+    let connection = connections[n]
+
     let intermediateComponent = <Glyphicon glyph="arrow-right" />
     let walkingComponent = <Glyphicon glyph="piggy-bank" /> // i found no pedestrian icon, just a pig there:)
     // get the "connection parts" of this connection, convert them to components
@@ -60,11 +62,15 @@ export default class DestinationCard extends React.Component {
     res.pop()
     return res
   }
+  // if theres a connection for this dest,
+  // return something like u1 -> s3 -> ...
+  getFastestConnectionDisplayComponents() {
+    return this.getConnectionDisplayComponents(0)
+  }
   // you have the selection, now get back the station obj
   getStationObjFromName(val) {
     let station = this.props.stationsList.find(s => s.name.trim().toLowerCase() == val)
     if(station) {
-      console.log(station)
       return station
     }
   }
@@ -109,7 +115,26 @@ export default class DestinationCard extends React.Component {
   // onBlur = () => {
   //   this.props.onBlur && this.props.onBlur()
   // }
+  getTravelTimeComponent() {
+    let connections = this.getConnections()
+    if(!connections || !connections.length ) return null
+    let connection = connections[0] // will change to arbitrary connections later
+    let fromTime = Utils.unixTimeStampToDateHHMM(connection.departure),
+        toTime = Utils.unixTimeStampToDateHHMM(connection.arrival),
+        remainTime = Utils.timeDifferenceToDateHHMMSS(this.props.currentTime,connection.departure),
+        content = ` ${fromTime} - ${toTime}`
+    return (
+      <div style={style.destinationCard.upperRow.right}>
+        <div style={style.destinationCard.upperRow.right.up}>
+          <h4>{toTime}</h4>
+        </div>
+        <div style={style.destinationCard.upperRow.right.down}>
+          <h6>Depart in {remainTime}</h6>
+        </div>
+      </div>
 
+    )
+  }
   render() {
     const { value, suggestions } = this.state
     const inputProps = {
@@ -142,11 +167,16 @@ export default class DestinationCard extends React.Component {
         </Form>
       </Well>
     )
+    // component that renders travel time of this connection
+
     return (
-      <Well>
+      <Well bsSize="small">
         <div style={style.destinationCard}>
           <div style={style.destinationCard.upperRow}>
-            to <h4 style={style.destinationCard.upperRow.name}> {this.props.station.name} </h4>
+            <div style={style.destinationCard.upperRow.left}>
+              <h6>to</h6> <h4 style={style.destinationCard.upperRow.left.name}> {this.props.station.name} </h4>
+            </div>
+            {this.getTravelTimeComponent()}
           </div>
           <div style={style.destinationCard.lowerRow}>
             {this.getFastestConnectionDisplayComponents()}

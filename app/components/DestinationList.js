@@ -14,7 +14,7 @@ export default class DestinationList extends React.Component {
     super(props)
 
     this.state = {
-      numDestinationShown: 3,
+      numDestinationShown: 2,
       currentPage: 1,
       isAddingNewDestination: false,
     }
@@ -61,6 +61,7 @@ export default class DestinationList extends React.Component {
   addNewDestinationButton() {
     return <ImageWithText onClick={this.displayAddDestinationCell.bind(this)} opacity={0.5} glyphicon="plus" text="Click to add a new destination" />
   }
+
   destinationComponents() {
     let indexFrom = this.state.numDestinationShown * (this.state.currentPage - 1)
     let indexTo = indexFrom + this.state.numDestinationShown

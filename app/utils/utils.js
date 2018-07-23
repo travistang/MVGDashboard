@@ -59,9 +59,10 @@ export const flattenList = (lists) => {
 }
 
 export const unixTimeStampToDate = (ts) => new Date(ts)
+export const pad = (s) => s.toString().padStart(2,'0')
 export const unixTimeStampToDateHHMM = (ts) => {
   let time = unixTimeStampToDate(ts)
-  let pad = (s) => s.toString().padStart(2,'0')
+  // let pad = (s) => s.toString().padStart(2,'0')
   let hh = pad(time.getHours())
   let mm = pad(time.getMinutes())
   return `${hh}:${mm}`
@@ -80,5 +81,12 @@ export const timeDifferenceToDateString = (timeA,timeB) => {
   return {
     hh,mm,ss,hasPassed
   }
+}
+
+export const timeDifferenceToDateHHMMSS = (timeA,timeB) => {
+  let {hh,mm,ss,hasPassed} = timeDifferenceToDateString(timeA,timeB)
+  let res = hasPassed?"-":"" // if time diff is negative, add a "-" in front
+  if(hh > 0) res += (pad(hh) + ":") // since its more than an hour, concat the hour component from front
+  return `${res}${pad(mm)}:${pad(ss)}`
 }
 export const listOfN = (n) => [...Array(n + 1).keys()].slice(1)
