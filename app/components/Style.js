@@ -256,14 +256,28 @@ export default {
     leftContainer: {
       flex: 1,
       display: "flex",
+      margin: "1%",
       ...centerContentStyle,
       flexDirection: "column",
       topContainer: {
-        flex: "1 0 20%",
+        flex: "0 0 144px",
+        position: "relative",
         flexDirection: "column",
         width: "100%",
         // paddingLeft: "10%",
-        ...underlineStyle,
+        // ...underlineStyle,
+        overlay: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 10000,
+          flexDirection: "column",
+          width: "100%",
+          height: "100%",
+          padding: '1%',
+          paddingLeft: "5%",
+          opacity:"0.8",
+        }
       },
       bottomContainer: {
         flex: "1 0 80%", // 80% of the basis

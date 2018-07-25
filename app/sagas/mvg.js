@@ -29,15 +29,25 @@ export function* fetchStation() {
   }
 
 }
+// TODO: get the location from store
 function getGeoLocation() {
   return {
     // Location of Giesing
     lat: 48.11081,
     lng: 11.594633,
   }
+  // console.log('getting geolocation')
   // return new Promise(
-  //   (res,rej) => navigator.geolocation.getCurrentPosition(res,rej)
-  // )
+  //   (res,rej) => navigator.geolocation.getCurrentPosition(res)
+  // ).then(({coords}) => {
+  //   console.log('got coords')
+  //   console.log(coords)
+  //   let lat = coords.latitude,
+  //       lng = coords.longitude
+  //   return {
+  //     lat,lng
+  //   }
+  // })
 }
 function* onFetchStationSuccess() {
   // get closest station here!

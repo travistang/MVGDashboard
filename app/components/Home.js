@@ -18,6 +18,7 @@ import StationCard from './StationCard'
 import DepartureCard from '../containers/DepartureCard'
 import DestinationList from '../containers/DestinationList'
 import * as Utils from '../utils/utils'
+import {Map, TileLayer, Marker, Popup} from 'react-leaflet'
 type Props = {};
 
 export default class Home extends Component<Props> {
@@ -102,6 +103,36 @@ export default class Home extends Component<Props> {
       <InformationOverlay {...props} />
     )
   }
+  getMap(station) {
+    let lat = station.latitude,
+        lng = station.longitude
+    //
+    return (
+      <Map
+        zoomControl={false}
+        center={[lat,lng]}
+        zoom={13}
+        opacity={0.7}
+        draggable={false}
+        style={{height: "144px"}}
+      >
+        <TileLayer
+          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
+        />
+        {this.props.closest_stations && this.props.closest_stations.map(s => (
+          <Marker
+            opacity={0.7}
+            draggable={false}
+            position={[s.latitude,s.longitude]}
+          >
+            <Popup>
+              {s.name}
+            </Popup>
+          </Marker>
+        ))}
+      </Map>
+    )
+  }
   leftContainer() {
     if(this.props.closest_stations.length == 0) return null
     let closestStation = this.props.closest_stations[0]
@@ -109,10 +140,16 @@ export default class Home extends Component<Props> {
     return (
     <div style={style.mainContainer.leftContainer}>
       <div style={style.mainContainer.leftContainer.topContainer}>
-        <h6> You are around </h6>
-        <h1> {Utils.getStationName(closestStation)}
-        </h1>
-        <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
+        <div style={style.mainContainer.leftContainer.topContainer.overlay}>
+          <h6> You are around </h6>
+          <h1> {Utils.getStationName(closestStation)}
+          </h1>
+          <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
+        </div>
+        <div>
+          {this.getMap(closestStation)}
+        </div>
+
       </div>
 
       <DestinationList />
