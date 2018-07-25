@@ -103,7 +103,9 @@ export default class Home extends Component<Props> {
       <InformationOverlay {...props} />
     )
   }
-  getMap(station) {
+  getMap() {
+    if(!this.props.closest_stations || !this.props.closest_stations.length) return
+    let station = this.props.closest_stations[0]
     let lat = station.latitude,
         lng = station.longitude
     //
@@ -114,12 +116,12 @@ export default class Home extends Component<Props> {
         zoom={13}
         opacity={0.7}
         draggable={false}
-        style={{height: "144px"}}
+        style={{position: "absolute",top: 0,left:0, right: 0, bottom: 0, opacity: 0.5}}
       >
         <TileLayer
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
         />
-        {this.props.closest_stations && this.props.closest_stations.map(s => (
+        {this.props.closest_stations.map(s => (
           <Marker
             opacity={0.7}
             draggable={false}
@@ -147,7 +149,9 @@ export default class Home extends Component<Props> {
           <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
         </div>
         <div>
-          {this.getMap(closestStation)}
+          {
+            //this.getMap(closestStation)
+          }
         </div>
 
       </div>
@@ -211,13 +215,13 @@ export default class Home extends Component<Props> {
   }
   render() {
     return (
-
       <div style={style.app}>
         {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
         <div style={style.mainContainer}>
           {this.leftContainer()}
           {this.rightContainer()}
+          {this.getMap()}
         </div>
       </div>
     );

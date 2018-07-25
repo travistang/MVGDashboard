@@ -169,7 +169,7 @@ export default class DestinationCard extends React.Component {
     )
     // component that renders travel time of this connection
     return (
-      <Well bsSize="small">
+      
         <div style={style.destinationCard}>
           <div style={style.destinationCard.upperRow}>
             <div style={style.destinationCard.upperRow.left}>
@@ -183,7 +183,7 @@ export default class DestinationCard extends React.Component {
             </div>)
           }
         </div>
-      </Well>
+
     )
   }
   isEdit() {

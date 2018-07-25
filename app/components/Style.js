@@ -257,6 +257,7 @@ export default {
       flex: 1,
       display: "flex",
       margin: "1%",
+      zIndex: 2,
       ...centerContentStyle,
       flexDirection: "column",
       topContainer: {
@@ -272,11 +273,9 @@ export default {
           left: 0,
           zIndex: 10000,
           flexDirection: "column",
-          width: "100%",
-          height: "100%",
+          // width: "100%",
+          // height: "100%",
           padding: '1%',
-          paddingLeft: "5%",
-          opacity:"0.8",
         }
       },
       bottomContainer: {
@@ -290,7 +289,7 @@ export default {
     rightContainer: {
       flex: 1,
       display: "flex",
-
+      zIndex: 2,
       ...centerContentStyle,
       flexDirection: "column",
       topContainer: {
