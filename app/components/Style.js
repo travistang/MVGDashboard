@@ -254,7 +254,7 @@ export default {
     flexDirection: "row",
 
     leftContainer: {
-      flex: 1,
+      flex: "0 0 50%",
       display: "flex",
       margin: "1%",
       zIndex: 2,
@@ -287,7 +287,7 @@ export default {
       }
     },
     rightContainer: {
-      flex: 1,
+      flex: "0 0 50%",
       display: "flex",
       zIndex: 2,
       ...centerContentStyle,

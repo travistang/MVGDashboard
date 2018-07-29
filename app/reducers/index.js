@@ -5,11 +5,13 @@ import counter from './counter';
 import clock from './clock'
 import mvg from './mvg'
 import destination from './destinations'
+import location from './location'
 const rootReducer = combineReducers({
   counter,
   mvg,
   clock,
   destination,
+  location,
   router
 });
 

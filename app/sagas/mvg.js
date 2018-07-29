@@ -6,6 +6,7 @@ import * as MVGAction from '../actions/mvg'
 import * as DestinationAction from '../actions/destination'
 import Api from '../api'
 import * as Utils from '../utils/utils'
+import * as LocationSaga from './location'
 import {getPromise,setPromise} from '../api/destination'
 const apiInstance = new Api()
 
@@ -30,24 +31,16 @@ export function* fetchStation() {
 
 }
 // TODO: get the location from store
-function getGeoLocation() {
-  return {
-    // Location of Giesing
-    lat: 48.11081,
-    lng: 11.594633,
-  }
-  // console.log('getting geolocation')
-  // return new Promise(
-  //   (res,rej) => navigator.geolocation.getCurrentPosition(res)
-  // ).then(({coords}) => {
-  //   console.log('got coords')
-  //   console.log(coords)
-  //   let lat = coords.latitude,
-  //       lng = coords.longitude
-  //   return {
-  //     lat,lng
-  //   }
-  // })
+function* getGeoLocation() {
+  let location = yield call(LocationSaga.getLocation)
+  if(!location) {
+    // default location :)
+    return {
+      // Location of Giesing
+      lat: 48.11081,
+      lng: 11.594633,
+    }
+  } else return location
 }
 function* onFetchStationSuccess() {
   // get closest station here!

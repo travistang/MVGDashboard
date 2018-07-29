@@ -7,8 +7,11 @@ import * as MVGAction from '../actions/mvg'
 function mapStateToProps(state) {
   return {
     ...state.destination,
+    closest_stations: state.mvg.closest_stations,
     stations: state.mvg.stations, // also give the list of stations to choose from
-    connections: state.mvg.connections // so that the card knows what to render for connections
+    connections: state.mvg.connections, // so that the card knows what to render for connections
+    currentTime: state.clock.currentTime,
+
   }
 }
 function mapDispatchToProps(dispatch) {

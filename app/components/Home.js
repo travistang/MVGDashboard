@@ -9,6 +9,9 @@ import {
   Nav,
   Label,
   Pagination,
+  Well,
+  FormGroup,
+  ControlLabel,
 } from 'react-bootstrap'
 import style from './Style.js';
 
@@ -104,6 +107,7 @@ export default class Home extends Component<Props> {
     )
   }
   getMap() {
+    return null
     if(!this.props.closest_stations || !this.props.closest_stations.length) return
     let station = this.props.closest_stations[0]
     let lat = station.latitude,
@@ -139,26 +143,31 @@ export default class Home extends Component<Props> {
     if(this.props.closest_stations.length == 0) return null
     let closestStation = this.props.closest_stations[0]
 
+    if (!this.props.isChangingLocation)
     return (
-    <div style={style.mainContainer.leftContainer}>
-      <div style={style.mainContainer.leftContainer.topContainer}>
-        <div style={style.mainContainer.leftContainer.topContainer.overlay}>
-          <h6> You are around </h6>
-          <h1> {Utils.getStationName(closestStation)}
-          </h1>
-          <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
+      <div style={style.mainContainer.leftContainer}>
+        <div style={style.mainContainer.leftContainer.topContainer}>
+          <div
+            onClick={this.props.toggleChangeLocation}
+            style={style.mainContainer.leftContainer.topContainer.overlay}
+          >
+            <h6> You are around </h6>
+            <h1> {Utils.getStationName(closestStation)}
+            </h1>
+            <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
+          </div>
+
         </div>
-        <div>
-          {
-            //this.getMap(closestStation)
-          }
-        </div>
+
+        <DestinationList />
 
       </div>
+    )
 
-      <DestinationList />
-
-    </div>)
+    // input field for changing location
+    return (
+      <StationSelection />
+    )
   }
 
   closestStationList() {
