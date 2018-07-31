@@ -71,7 +71,6 @@ function* onGetConnection({target_station_id}) {
       // now try to make the reducer's life easier
       // indicate the DESTINATION of this list of connections
       let connectionsListObj = {
-        // TODO: check here
         [connections[0].to.id]: connections
       }
       yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})

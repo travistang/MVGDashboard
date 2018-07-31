@@ -12,12 +12,20 @@ import {
   watchGetDestinationSuccess,
   watchAddDestinationSuccess,
 } from './mvg'
+
 import {
   storeDestinationWatcher,
   getDestinationWatcher,
   clearDestinationWatcher,
   removeDestinationWatcher,
 } from './destination'
+
+import {
+  getLineWatcher,
+  getLineOnGetConnectionSuccessWatcher,
+  getLineEncodingWatcher,
+} from './line'
+
 const getClock = (state) => state.clock.clock
 //reset clock
 export function* resetClock() {
@@ -37,11 +45,17 @@ export function* tick() {
     // only fetch at the beginning of the program
     yield put({type: MVGAction.GET_STATIONS})
     yield put({type: DestinationAction.GET_DESTINATION})
+    // fetch line encoding
+    yield put({type: MVGAction.GET_LINE_ENCODING})
   }
   // TODO: what if get stations failed??
   if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
     // for all subsequent time...
-    yield put({type: MVGAction.GET_DEPARTURES})
+    try { // guard the departure fetching process
+      yield put({type: MVGAction.GET_DEPARTURES})
+    } catch (e) {
+      yield put({type: MVGAction.GET_DEPARTURES_FAILED,error: e})
+    }
     // trigger reload of all connection list
     let destinations = yield select(state => state.destination.destinations)
     yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
@@ -57,6 +71,7 @@ export function* mainLoop() {
 }
 export default function* rootSaga(getState) {
   yield [
+    // watchers related to common MVG-station-related actions
     watchFetchStations(),
     watchGetDepartures(),
     watchGetConnections(),
@@ -64,11 +79,21 @@ export default function* rootSaga(getState) {
     watchGetDestinationSuccess(),
     watchAddDestinationSuccess(),
 
+    // watchers related to destination info
     storeDestinationWatcher(),
     clearDestinationWatcher(),
     getDestinationWatcher(),
     removeDestinationWatcher(),
 
+    // watchers related to line info
+      // explicitly watch for a line info request
+      // I'm quite sure that it is needed later
+    getLineWatcher(),
+      // also get line info once connection fetch is succesful
+    getLineOnGetConnectionSuccessWatcher(),
+    getLineEncodingWatcher(),
+
+    // of course the main loop for ticking the clock and perform regular update
     mainLoop()
   ]
 }

@@ -8,7 +8,10 @@ const defaultState = {
   // this is the connections object that stores the connections between one station to another
   // the key of it would be the ID OF DESTINATION of the connection
   // value would be the LIST of connections possible to reach this destination
-  connections: {}
+  connections: {},
+  // this is the list of lines that may or may not be in the cache,
+  // it will only be filled on demand (say the line info is requested)
+  lines: {}
 }
 export default function mvg(state = defaultState,action) {
   switch(action.type) {
@@ -35,6 +38,9 @@ export default function mvg(state = defaultState,action) {
         ...state,
         connections: {...state.connections,...action.connections}
       }
+    case MVGAction.GET_LINE_SUCCESS:
+      return {...state,lines: {...state.lines,[action.name]:action.line}}
+
     default: return state
   }
 }

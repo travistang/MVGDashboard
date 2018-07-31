@@ -59,7 +59,7 @@ export const flattenList = (lists) => {
 }
 
 export const unixTimeStampToDate = (ts) => new Date(ts)
-export const pad = (s) => s.toString().padStart(2,'0')
+export const pad = (s,len = 2) => s.toString().padStart(len,'0')
 export const unixTimeStampToDateHHMM = (ts) => {
   let time = unixTimeStampToDate(ts)
   // let pad = (s) => s.toString().padStart(2,'0')
