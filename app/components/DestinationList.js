@@ -3,13 +3,13 @@ import style from './Style.js'
 import ImageWithText from './ImageWithText'
 import DestinationCard from '../containers/DestinationCard'
 import * as DestinationAction from '../actions/destination'
+import * as Utils from '../utils/utils'
 import {
   Button,
   ButtonGroup,
   Pagination,
   Glyphicon
 } from 'react-bootstrap'
-import * as Utils from '../utils/utils'
 import {
   Map,
   TileLayer,
@@ -33,10 +33,15 @@ export default class DestinationList extends React.Component {
       isAddingNewDestination: false,
       isRemoving: false,
 
-      displayMode: this.displayMode.LIST
+      displayMode: this.displayMode.LIST,
+      connectionLines: {},
     }
     // get destinations and they will be stored in the store
     this.props.getDestinations()
+
+  }
+  componentWillReceiveProps() {
+    this.getConnectionLines()
   }
   // the "map" mode component
   // which displays the fastest route to the destination
@@ -71,27 +76,51 @@ export default class DestinationList extends React.Component {
           </Marker>
         ))}
         {
-          Object.keys(this.props.connections).map(destId => {
-            // get the earliest connection
-            let connection = this.props.connections[destId]
-                .filter(conn => conn.departure > this.props.currentTime)
-                .sort((conA,conB) => conA.arrival - conB.arrival)[0]
-
-            // return polyline for each connection...
-            return connection.connectionPartList
-              .map(part => (
-                <Polyline
-                  positions={[
-                    [part.from.latitude,part.from.longitude],
-                    [part.to.latitude,part.to.longitude]
-                  ]}
-                />
-              ))
-          })
-          .reduce((a,p) => [...a,...p],[]) // flatten the list to get just a bunch of line segments
+          // the computed connection lines are stored as values, which will be computed on the fly
+          Object.values(this.state.connectionLines)
         }
       </Map>
     )
+  }
+  // function that calculates get connection lines
+  getConnectionLines() {
+    let connectionLines = {}
+    Object
+      .keys(this.props.connections)
+      .forEach(destId => { // now this is for each station to station way, from one place to another, should be a list of trip now
+        // get the earliest connection
+        let connection = this.props.connections[destId]
+            .filter(conn => conn.departure > this.props.currentTime)
+            .sort((conA,conB) => conA.arrival - conB.arrival)[0]
+
+        // if we dont have the station list of the line, just dont render it...
+        if(
+          connection.connectionPartList.some(part =>
+            Object.keys(this.props.lines).indexOf(part.label) == -1
+          )
+        ) return
+
+        // return polyline for each connection...
+        connection.connectionPartList // for each part, say U2 -> S1 -> 292
+          .forEach(part => { // for each part...
+            let fromStationId = part.from.id,
+                toStationId   = part.to.id,
+                cacheLabel = `${fromStationId}-${toStationId}-${part.label}`
+
+            // try to search for cache...
+            if(this.state.connectionLines[cacheLabel]) return this.state.connectionLines[cacheLabel]
+            // no cache, compute the lines...
+            let
+                mvvStations   = this.props.lines[part.label][0].points,
+                mvvStationParts = Utils.getStationsBetween(fromStationId,toStationId,mvvStations),
+                mvvStationPartsWithCoordinates = mvvStationParts.map(s => Utils.convertMVVStationToMVGStation(s,this.props.stations)),
+                coords = mvvStationPartsWithCoordinates.map(s => s.coords),
+                result = (<Polyline positions={coords}/>)
+            connectionLines[cacheLabel] = result
+
+          })
+        this.setState({...this.state,connectionLines}) // set all lines all at once
+      })
   }
   header() {
     // if(this.props.destinations.length == 0 && !this.state.isAddingNewDestination) return null

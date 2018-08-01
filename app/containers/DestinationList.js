@@ -12,7 +12,7 @@ function mapStateToProps(state) {
     stations: state.mvg.stations, // also give the list of stations to choose from
     connections: state.mvg.connections, // so that the card knows what to render for connections
     currentTime: state.clock.currentTime,
-
+    lines: state.mvg.lines,
   }
 }
 function mapDispatchToProps(dispatch) {

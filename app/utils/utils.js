@@ -7,6 +7,7 @@ export const getStationName = (station) => {
   return `${name}, ${place}`
 }
 
+
 let deg2rad = function(deg) {
   return deg * (Math.PI/180)
 }
@@ -90,3 +91,35 @@ export const timeDifferenceToDateHHMMSS = (timeA,timeB) => {
   return `${res}${pad(mm)}:${pad(ss)}`
 }
 export const listOfN = (n) => [...Array(n + 1).keys()].slice(1)
+
+export const convertMVVStationToMVGStation = (mvvStation,mvgStationList) => {
+  let correspondingMVGStation
+  try {
+    console.log('mvgStationList')
+    console.log(mvgStationList)
+    console.log('parseint result')
+    console.log(parseInt(mvvStation.ref.id) % 1e5)
+    correspondingMVGStation = mvgStationList.find(mvgS => mvgS.id == parseInt(mvvStation.ref.id) % 1e5)
+  } catch(e) {
+    console.log('convert mvv stations to mvg station failed with error')
+    console.log(e)
+    return null // aw..
+  }
+  // replace the coordinate to the corresponding mvg station's coordinate...
+  let latlngCoord = [
+    correspondingMVGStation.latitude,
+    correspondingMVGStation.longitude
+  ]
+  return {...mvvStation, coords: latlngCoord}
+}
+
+export const getStationsBetween = (fromId,toId,mvvStations) => {
+  let mvvStationsIds = mvvStations.map(s => parseInt(s.ref.id) % 1e5 ),
+      fromIdInList = mvvStationsIds.indexOf(fromId),
+      toIdInList   = mvvStationsIds.indexOf(toId),
+      hasInvalid = fromIdInList < 0 || toIdInList < 0
+  if (hasInvalid) return null
+  else return (fromIdInList < toIdInList)?
+    mvvStations.slice(fromIdInList,toIdInList) :
+    mvvStations.slice(toIdInList,fromIdInList)
+}
