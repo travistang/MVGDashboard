@@ -119,8 +119,8 @@ export default class DestinationList extends React.Component {
             connectionLines[cacheLabel] = result
 
           })
-        this.setState({...this.state,connectionLines}) // set all lines all at once
       })
+      this.setState({...this.state,connectionLines}) // set all lines all at once
   }
   header() {
     // if(this.props.destinations.length == 0 && !this.state.isAddingNewDestination) return null
