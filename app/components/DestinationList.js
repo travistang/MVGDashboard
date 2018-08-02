@@ -16,7 +16,8 @@ import {
   Marker,
   Popup,
   Polyline,
-  Tooltip
+  Tooltip,
+  Circle
 } from 'react-leaflet'
 
 export default class DestinationList extends React.Component {
@@ -52,7 +53,6 @@ export default class DestinationList extends React.Component {
         zoomControl={false}
         center={[lat,lng]}
         zoom={11}
-        draggable={false}
         style={{height: "100%",width: "100%"}}
       >
         <TileLayer
@@ -62,14 +62,20 @@ export default class DestinationList extends React.Component {
           position={[lat,lng]}
           draggable={false}
         >
-
+          <Tooltip permanent>
+            You are here
+          </Tooltip>
         </Marker>
+        <Circle radius={2000} center={[lat,lng]}>
+        </Circle>
         {this.props.destinations.map(dest => (
           <Marker
             draggable={false}
             position={[dest.latitude,dest.longitude]}
           >
-
+            <Popup permanent>
+                {dest.name}
+            </Popup>
           </Marker>
         ))}
 
@@ -91,7 +97,12 @@ export default class DestinationList extends React.Component {
       </Map>
     )
   }
-
+  // functions that gives the popup component for a marker on a destination
+  getMarkerPopup(dest) {
+    // return (
+    //
+    // )
+  }
   header() {
     // if(this.props.destinations.length == 0 && !this.state.isAddingNewDestination) return null
     let buttons = Object.values(this.displayMode).map(mode => {
