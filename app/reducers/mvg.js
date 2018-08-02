@@ -11,7 +11,9 @@ const defaultState = {
   connections: {},
   // this is the list of lines that may or may not be in the cache,
   // it will only be filled on demand (say the line info is requested)
-  lines: {}
+  lines: {},
+  // this is a list of line segment computed
+  connectionLines: {}
 }
 export default function mvg(state = defaultState,action) {
   switch(action.type) {
@@ -40,7 +42,8 @@ export default function mvg(state = defaultState,action) {
       }
     case MVGAction.GET_LINE_SUCCESS:
       return {...state,lines: {...state.lines,[action.name]:action.line}}
-
+    case MVGAction.SET_LINE_SEGMENT_CACHE:
+      return {...state,connectionLines: action.connectionLines}
     default: return state
   }
 }

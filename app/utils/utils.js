@@ -123,3 +123,10 @@ export const getStationsBetween = (fromId,toId,mvvStations) => {
     mvvStations.slice(fromIdInList,toIdInList) :
     mvvStations.slice(toIdInList,fromIdInList)
 }
+
+export const getConnectionPartCacheLabel = (part) => {
+  let fromStationId = part.from.id,
+      toStationId   = part.to.id,
+      cacheLabel = `${fromStationId}-${toStationId}-${part.label}`
+  return cacheLabel
+}

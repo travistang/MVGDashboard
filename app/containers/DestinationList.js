@@ -13,6 +13,7 @@ function mapStateToProps(state) {
     connections: state.mvg.connections, // so that the card knows what to render for connections
     currentTime: state.clock.currentTime,
     lines: state.mvg.lines,
+    connectionLines: state.mvg.connectionLines
   }
 }
 function mapDispatchToProps(dispatch) {
@@ -23,6 +24,7 @@ function mapDispatchToProps(dispatch) {
     removeDestination: (id) => dispatch({type: DestinationAction.REMOVE_DESTINATION,id}),
     refereshRoute: (target_station_id) => dispatch({type: MVGAction.GET_DESTINATION,target_station_id}),
     getLineInfo: (line) => dispatch({type: MVGAction.GET_LINE,line}),
+    // computeLineSegment: (connection,lines) => dispatch({type: MVGAction.COMPUTE_LINE_SEGMENT,connection,lines})
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(DestinationListComponent)

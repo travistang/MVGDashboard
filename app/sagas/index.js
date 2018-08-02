@@ -11,6 +11,10 @@ import {
   watchFetchStationsSuccess,
   watchGetDestinationSuccess,
   watchAddDestinationSuccess,
+  watchComputeLineSegment,
+
+  watchDestinationAdd,
+  watchDestinationRemove,
 } from './mvg'
 
 import {
@@ -47,8 +51,14 @@ export function* tick() {
     yield put({type: DestinationAction.GET_DESTINATION})
     // fetch line encoding
     yield put({type: MVGAction.GET_LINE_ENCODING})
+
+  }
+  // update line segment every 5 seconds
+  if(stateClock > 0 && stateClock % 5 == 0 && shouldUpdate) {
+    yield put({type: MVGAction.COMPUTE_LINE_SEGMENT})
   }
   // TODO: what if get stations failed??
+
   if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
     // for all subsequent time...
     try { // guard the departure fetching process
@@ -86,13 +96,16 @@ export default function* rootSaga(getState) {
     removeDestinationWatcher(),
 
     // watchers related to line info
-      // explicitly watch for a line info request
-      // I'm quite sure that it is needed later
+    // explicitly watch for a line info request
+    // I'm quite sure that it is needed later
     getLineWatcher(),
       // also get line info once connection fetch is succesful
     getLineOnGetConnectionSuccessWatcher(),
     getLineEncodingWatcher(),
 
+    watchComputeLineSegment(),
+    watchDestinationAdd(),
+    watchDestinationRemove(),
     // of course the main loop for ticking the clock and perform regular update
     mainLoop()
   ]

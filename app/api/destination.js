@@ -8,8 +8,6 @@ export const setPromise = (key,data) => new Promise((resolve,reject) => {
 })
 export const getPromise = (key) => new Promise((resolve,reject) => {
   storage.get(key,(e,data) => {
-    console.log('storage data')
-    console.log(data)
     if(e) reject(e)
     else resolve(data)
   })

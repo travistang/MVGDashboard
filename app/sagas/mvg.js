@@ -8,7 +8,10 @@ import Api from '../api'
 import * as Utils from '../utils/utils'
 import * as LocationSaga from './location'
 import {getPromise,setPromise} from '../api/destination'
+import Line from '../api/line'
+
 const apiInstance = new Api()
+const lineInstance = new Line()
 
 export function* fetchStation() {
   let stations
@@ -66,7 +69,7 @@ function* onGetConnection({target_station_id}) {
     let connections = yield call(
       apiInstance.getConnections.bind(apiInstance),
       from_station_id,target_station_id)
-    if(connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
+    if(!connections || !connections.length || connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
     else {
       // now try to make the reducer's life easier
       // indicate the DESTINATION of this list of connections
@@ -107,6 +110,72 @@ function* fetchConnectionsToAllStations(action) {
 
 }
 
+/*
+  What it does:
+    for each of the destinations, get the earliest connections of each of them.
+    for each of the connections, gather the parts of them
+    if theres no such parts on the state, calculate it,
+
+    then put actions and store the result
+
+*/
+function* onComputeLineSegment() {
+  let connections = yield select(state => state.mvg.connections)
+  let cache = yield select(state => state.mvg.connectionLines)
+  let stations = yield select(state => state.mvg.stations)
+  let currentTime = yield select(state => state.clock.currentTime)
+  let lines = yield select(state => state.mvg.lines)
+  let currentParts = {} // try to remove all unnecessary parts by remembering whats the part we have currently
+  let hasUpdate = false
+  if(!connections || !cache || !stations || ! lines) return
+  let earliestConnections = Utils.flattenList(
+    Object.keys(connections).map(destId => {
+      let conns = connections[destId].filter(conn => conn.departure > currentTime)
+      if(conns.length == 0) return null
+      // get the first departure
+      let conn = conns[0]
+      return conn.connectionPartList
+    })
+  )
+  .filter(part => !!part)
+  .filter(part => !!part.label) // make sure the labels exist
+  .reduce((acc,part) => { // remove duplicate
+    if(!acc.find(curPart => curPart.label == part.label)) return acc.concat(part)
+    else return acc
+  },[])
+  console.log('earliestConnections')
+  console.log(earliestConnections)
+  earliestConnections.forEach(part => {
+    // for each part, get the label...
+    let partLabel = Utils.getConnectionPartCacheLabel(part)
+    currentParts[partLabel] = {
+      from: part.from.id,
+      to:   part.to.id,
+      label:part.label,
+      coords:cache[partLabel]
+    }
+  })
+    Object.keys(currentParts)
+    .filter(lbl => !currentParts[lbl].coords) // get all paths that are not in cache
+    .forEach(lbl => {
+      hasUpdate = true // mark that there are indeed new paths calculated
+      let partParams = currentParts[lbl]
+      let coords = lineInstance.computeLineSegment(partParams.from,partParams.to,partParams.label,lines,stations)
+      currentParts[lbl].coords = coords
+    })
+  console.log(' compute line segment result')
+  console.log(currentParts)
+  if(hasUpdate) {
+    let result = Object.assign(
+      {},...Object.keys(currentParts)
+        .filter(lbl => !!currentParts[lbl].coords) // if theres no segment computed after update, then give this up
+        .map(lbl => ({[lbl]: currentParts[lbl].coords}))
+      )
+    console.log('has update, result:')
+    console.log(result)
+    yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:result})
+  }
+}
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)
 }
@@ -135,4 +204,16 @@ export function* watchGetDestinationSuccess() {
 // because the connections of the new dest needs to be fetched immediately..
 export function* watchAddDestinationSuccess() {
   yield takeEvery(DestinationAction.ADD_DESTINATION_SUCCESS,onAddDestinationSuccess)
+}
+
+export function* watchComputeLineSegment() {
+  yield takeLatest(MVGAction.COMPUTE_LINE_SEGMENT,onComputeLineSegment)
+}
+
+// also evaluate line segments again if a station is removed
+export function* watchDestinationRemove() {
+  yield takeLatest(DestinationAction.REMOVE_DESTINATION_SUCCESS,onComputeLineSegment)
+}
+export function* watchDestinationAdd() {
+  yield takeLatest(DestinationAction.ADD_DESTINATION_SUCCESS,onComputeLineSegment)
 }

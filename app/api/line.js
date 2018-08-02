@@ -105,19 +105,13 @@ export default class {
       // perform request, fetch station object, then store it
 
       let response = await Promise.all(encode.map(getRequestURL).map(this.performRequestJSON.bind(this)))
-      console.log(`result for getting line info for ${line}:`)
-      console.log(response)
       // check if all responses contain expected value, i.e. the geoObjects
       if(response.some(r => !r.geoObjects)) {
-        console.log(`got invalid stations for line ${line}`)
-        console.log(response)
         return null
       }
       // obtain the result by combining all the line together...
       let finalResult = Utils.flattenList(response.map(r => r.geoObjects.items.map(item => item.item)))
       // try to cache it
-      console.log('final result')
-      console.log(finalResult)
       await Store.setPromise(line,finalResult)
       return finalResult
     } catch(e) {
@@ -156,5 +150,18 @@ export default class {
 
       }) // request
     }) // promise
+  }
+  // given a connection (from station to station),lines (containing stations of all lines), and the cache (from state)
+  // give a computed new line segments
+  computeLineSegment(fromStationId,toStationId,label,lines,stations) {
+      if (!lines[label]) return null
+      let mvvStations     = lines[label][0].points
+      if(!mvvStations) return null // sorry no such line
+      let mvvStationParts = mvvStations
+      // let mvvStationParts = Utils.getStationsBetween(fromStationId,toStationId,mvvStations)
+      if(!mvvStationParts) return null
+      let mvvStationPartsWithCoordinates = mvvStationParts.map(s => Utils.convertMVVStationToMVGStation(s,stations))
+      let coords = mvvStationPartsWithCoordinates.map(s => s.coords)
+      return coords
   }
 }
