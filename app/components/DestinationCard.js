@@ -52,8 +52,7 @@ export default class DestinationCard extends React.Component {
       else { // i think this is a transportation, now lets look at the part..
         let label = part.label
         // TODO: how to properly get the color of this transport!?
-        let color = '#222'
-        return <LineTag backgroundColor={color} line={label} />
+        return <LineTag backgroundColor={Utils.getColor(label)} line={label} />
       }
     })
     .map(part => <div style={style.destinationCard.transportationList}> {part} </div>)
@@ -169,7 +168,7 @@ export default class DestinationCard extends React.Component {
     )
     // component that renders travel time of this connection
     return (
-      
+
         <div style={style.destinationCard}>
           <div style={style.destinationCard.upperRow}>
             <div style={style.destinationCard.upperRow.left}>

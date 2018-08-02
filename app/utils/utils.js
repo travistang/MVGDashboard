@@ -39,7 +39,67 @@ export const getProductColorCode = (product) => {
     default: return ""
   }
 }
+// hardcoding this list is easier than obtaining it programmatically...
+/*
+  Its the U bahn and S bahn that are more colorful..
+  for buses, trams and the rest they usually use a unified color.
+*/
+export const getColor = (line) => {
+  switch(line) {
+    case 'U1':
+    case 'U7':
+      return "#45803A"
+    case 'U2':
+      return "#C2133B"
+    case 'U3':
+    case 'U8':
+      return "#F16E3B"
+    case 'U4':
+      return "#20B28D"
+    case 'U5':
+      return "#B77320"
+    case 'U6':
+      return "#0E6DB1"
+    case "U": // some special trains...
+      return
+    case 'S1':
+      return "#29C0E7"
+    case 'S2':
+      return "#73BE4C"
+    case 'S3':
+      return "#8E2C8D"
+    case 'S4':
+      return "#EB2131"
+    // case 'S5': // theres no S5...
+    case 'S6':
+      return "#159865"
+    case 'S7':
+      return "#873330"
+    case 'S8':
+      return "#231F20"
+    case 'S20':
+      return "#E8536F"
 
+  }
+  // check if its a tram /metro bus
+  if(line.match(/^\d{2}$/)) {
+    let num = parseInt(line)
+    if(12 <= num && num <= 37) return "#D62429" // the trams
+    if(50 >= num) return "#EA6732" // the metro bus
+  }
+
+  if(line[0] == "R") {
+    // the regional trains..
+    return "#373B7D"
+  }
+  if(line[0] == "X") {
+    // the express bus...
+    return "#51907A"
+  }
+
+  // the bus, the unknown lines...
+  return "#085365"
+}
 export const getProductShortName = (product) => {
   switch(product) {
     case 'TRAM':

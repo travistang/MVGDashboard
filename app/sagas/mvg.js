@@ -128,53 +128,51 @@ function* onComputeLineSegment() {
   let currentParts = {} // try to remove all unnecessary parts by remembering whats the part we have currently
   let hasUpdate = false
   if(!connections || !cache || !stations || ! lines) return
-  let earliestConnections = Utils.flattenList(
-    Object.keys(connections).map(destId => {
-      let conns = connections[destId].filter(conn => conn.departure > currentTime)
-      if(conns.length == 0) return null
-      // get the first departure
-      let conn = conns[0]
-      return conn.connectionPartList
-    })
-  )
-  .filter(part => !!part)
-  .filter(part => !!part.label) // make sure the labels exist
-  .reduce((acc,part) => { // remove duplicate
-    if(!acc.find(curPart => curPart.label == part.label)) return acc.concat(part)
-    else return acc
-  },[])
-  console.log('earliestConnections')
-  console.log(earliestConnections)
+  let earliestConnections
+  try {
+    earliestConnections = Utils.flattenList(
+      Object.keys(connections).map(destId => {
+        let conns = connections[destId].filter(conn => conn.departure > currentTime)
+        if(conns.length == 0) return null
+        // get the first departure
+        let conn = conns[0]
+        return conn.connectionPartList
+      })
+    )
+    .filter(part => !!part)
+    .filter(part => !!part.label) // make sure the labels exist
+    .reduce((acc,part) => { // remove duplicate
+      if(!acc.find(curPart => curPart.label == part.label)) return acc.concat(part)
+      else return acc
+    },[])
+  } catch(e) {
+    console.log('onComputeLineSegment got error:')
+    console.log(e)
+    return
+  }
   earliestConnections.forEach(part => {
     // for each part, get the label...
     let partLabel = Utils.getConnectionPartCacheLabel(part)
+    // try to search for cache
+    let coords = (cache[partLabel] && cache[partLabel].coords)
+    if(!coords) {
+      // mark has updated
+      hasUpdate = true
+      coords = lineInstance.computeLineSegment(part.from.id,part.to.id,part.label,lines,stations)
+      if(!coords) return // can't compute this, give up
+    }
     currentParts[partLabel] = {
       from: part.from.id,
       to:   part.to.id,
       label:part.label,
-      coords:cache[partLabel]
+      // try to see if theres such a cache, if not then compute it
+      coords
     }
   })
-    Object.keys(currentParts)
-    .filter(lbl => !currentParts[lbl].coords) // get all paths that are not in cache
-    .forEach(lbl => {
-      hasUpdate = true // mark that there are indeed new paths calculated
-      let partParams = currentParts[lbl]
-      let coords = lineInstance.computeLineSegment(partParams.from,partParams.to,partParams.label,lines,stations)
-      currentParts[lbl].coords = coords
-    })
-  console.log(' compute line segment result')
-  console.log(currentParts)
-  if(hasUpdate) {
-    let result = Object.assign(
-      {},...Object.keys(currentParts)
-        .filter(lbl => !!currentParts[lbl].coords) // if theres no segment computed after update, then give this up
-        .map(lbl => ({[lbl]: currentParts[lbl].coords}))
-      )
+
     console.log('has update, result:')
-    console.log(result)
-    yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:result})
-  }
+    console.log(currentParts)
+    yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:currentParts})
 }
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)

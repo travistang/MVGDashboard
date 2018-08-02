@@ -15,7 +15,8 @@ import {
   TileLayer,
   Marker,
   Popup,
-  Polyline
+  Polyline,
+  Tooltip
 } from 'react-leaflet'
 
 export default class DestinationList extends React.Component {
@@ -75,7 +76,17 @@ export default class DestinationList extends React.Component {
         {
           // convert the computed coords into line segments
           Object.values(this.props.connectionLines)
-            .map(coords => <Polyline positions={coords} />)
+            .map(part => (
+              <Polyline
+                color={Utils.getColor(part.label)}
+                positions={part.coords}
+              >
+                <Popup>
+                  {part.label}
+                </Popup>
+              </Polyline>
+            ))
+
         }
       </Map>
     )
@@ -128,14 +139,15 @@ export default class DestinationList extends React.Component {
     this.setState({
       ...this.state,
       isRemoving: true,
+      currentPage:1, // need to go to the first page otherwise nothing is shown...
       displayMode: this.displayMode.LIST, // have to switch it back to list for delection - make it simple:)
-      numDestinationShown: 4, // can show more as its slimmer
+      numDestinationShown: 5, // can show more as its slimmer
       isAddingNewDestination: false})
   }
   cancelRemoveDestinations() {
     this.setState({
       ...this.state,
-      numDestinationShown: 2, // cannot show more as its bigger..
+      numDestinationShown: 3, // cannot show more as its bigger..
       isRemoving: false})
   }
   clearDestinations(e) {
@@ -203,7 +215,7 @@ export default class DestinationList extends React.Component {
   setDisplayMode(mode) {
     // check whether mode is value
     if(Object.values(this.displayMode).indexOf(mode) == -1) return
-    this.setState({...this.state,displayMode: mode})
+    this.setState({...this.state,displayMode: mode,isRemoving: this.state.isRemoving && mode != this.displayMode.MAP})
   }
 
   getDisplayComponents() {

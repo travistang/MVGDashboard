@@ -43,7 +43,7 @@ export default function mvg(state = defaultState,action) {
     case MVGAction.GET_LINE_SUCCESS:
       return {...state,lines: {...state.lines,[action.name]:action.line}}
     case MVGAction.SET_LINE_SEGMENT_CACHE:
-      return {...state,connectionLines: action.connectionLines}
+      return {...state,connectionLines: Object.assign({},action.connectionLines)}
     default: return state
   }
 }

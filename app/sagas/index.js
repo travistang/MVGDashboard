@@ -53,22 +53,25 @@ export function* tick() {
     yield put({type: MVGAction.GET_LINE_ENCODING})
 
   }
+  try { // guard the departure fetching process
   // update line segment every 5 seconds
-  if(stateClock > 0 && stateClock % 5 == 0 && shouldUpdate) {
-    yield put({type: MVGAction.COMPUTE_LINE_SEGMENT})
-  }
-  // TODO: what if get stations failed??
-
-  if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
-    // for all subsequent time...
-    try { // guard the departure fetching process
-      yield put({type: MVGAction.GET_DEPARTURES})
-    } catch (e) {
-      yield put({type: MVGAction.GET_DEPARTURES_FAILED,error: e})
+    if(stateClock > 0 && stateClock % 5 == 0 && shouldUpdate) {
+      yield put({type: MVGAction.COMPUTE_LINE_SEGMENT})
     }
-    // trigger reload of all connection list
-    let destinations = yield select(state => state.destination.destinations)
-    yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
+    // TODO: what if get stations failed??
+
+    if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
+      // for all subsequent time...
+      yield put({type: MVGAction.GET_DEPARTURES})
+
+      // trigger reload of all connection list
+      let destinations = yield select(state => state.destination.destinations)
+      yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
+    }
+  }
+  catch (e) {
+    yield put({type: MVGAction.GET_DEPARTURES_FAILED,error: e})
+    yield put({type: CLOCK_TICK})
   }
   // tick the clock in all situation
   yield put({type: CLOCK_TICK})
@@ -76,7 +79,14 @@ export function* tick() {
 export function* mainLoop() {
   while(true) {
     yield delay(1000)
-    yield call(tick)
+    try {
+      yield call(tick)
+    } catch(e) {
+      console.log('ticking error')
+      console.log(e)
+      yield mainLoop()
+    }
+    
   }
 }
 export default function* rootSaga(getState) {
