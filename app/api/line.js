@@ -36,15 +36,12 @@ export default class {
       )
       return resultObj
     } catch(e) {
-      console.log('fetchRegionalBusEncodings got error:')
-      console.log(e)
       return null
     }
   }
   // some scraping of the general encodings
   async fetchGeneralEncodings() {
     try {
-      console.log('fetching general encodings')
       let response = await this.performRequest(this.generalEncodingEndpoint,false)
       let $ = cheerio.load(response)
       let resultObj = Object.assign(
@@ -55,12 +52,8 @@ export default class {
             )
           .get()
       )
-      console.log('result object from general encodings')
-      console.log(resultObj)
       return resultObj
     } catch(e) {
-      console.log('fetchGeneralEncodings got error:')
-      console.log(e)
       return null
     }
   }
@@ -113,8 +106,6 @@ export default class {
       await Store.setPromise(line,finalResult)
       return finalResult
     } catch(e) {
-      console.log(`got error when getting line info for ${line}`)
-      console.log(e)
       return null
     }
   }

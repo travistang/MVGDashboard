@@ -98,7 +98,7 @@ export default class Popup extends React.Component {
         <Modal.Body>
           <div style={style.modal.container}>
             <div style={style.modal.inputField}>
-              <Form inline>
+              <Form>
                 <FormGroup>
 
                   <ControlLabel> Choose the station that is closest to you:</ControlLabel>

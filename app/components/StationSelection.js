@@ -30,8 +30,6 @@ export default class StationSelection extends React.Component {
     });
   }
   onChange = (event, {newValue,method}) => {
-    console.log('new value')
-    console.log(newValue)
     if('click,enter'.split(',').indexOf(method) != -1) {
       let stationObj = this.getStationObjFromName(newValue)
       if(stationObj) this.props.onSelect(stationObj)
@@ -48,8 +46,6 @@ export default class StationSelection extends React.Component {
     }
   }
   onSuggestionsFetchRequested = ({value}) => {
-    console.log('suggestions fetch requested:')
-    console.log(value)
     let searchString = value.trim().toLowerCase()
     if(searchString.length == 0) return []
     let suggestions = this.props.stations

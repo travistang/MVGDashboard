@@ -37,8 +37,7 @@ export function* fetchStation() {
 function* getGeoLocation() {
   // location should then be {lat,lng}
   let location = yield call(LocationSaga.getLocation)
-  console.log('get geolocation g')
-  console.log(location)
+
   if(!location) {
     // default location :)
     return {
@@ -62,7 +61,6 @@ function* onFetchStationSuccess() {
 }
 
 function* onGetConnection({target_station_id}) {
-  console.log('on get connection!')
   const getClosestStationsFromState = (state) => state.mvg.closest_stations
   let closestStations = yield select(getClosestStationsFromState)
 
@@ -103,7 +101,6 @@ function* onGetDepartures() {
 // yield all connections to connections FROM THE CLOSEST STATION once and for all
 // TODO: how about from all closest stations to all destinations?!
 function* fetchConnectionsToAllStations(action) {
-  console.log('fetch all stations connections!')
   let destinations = action.destinations
   // now destinations should be a list of stations, get the list...
   let destinations_ids = destinations.map(d => d.id)
@@ -149,8 +146,6 @@ function* onComputeLineSegment() {
       else return acc
     },[])
   } catch(e) {
-    console.log('onComputeLineSegment got error:')
-    console.log(e)
     return
   }
   earliestConnections.forEach(part => {
@@ -172,9 +167,6 @@ function* onComputeLineSegment() {
       coords
     }
   })
-
-    console.log('has update, result:')
-    console.log(currentParts)
     yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:currentParts})
 }
 export function* watchFetchStations() {

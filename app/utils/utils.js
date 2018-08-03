@@ -159,8 +159,6 @@ export const convertMVVStationToMVGStation = (mvvStation,mvgStationList) => {
 
     correspondingMVGStation = mvgStationList.find(mvgS => mvgS.id == parseInt(mvvStation.ref.id) % 1e5)
   } catch(e) {
-    console.log('convert mvv stations to mvg station failed with error')
-    console.log(e)
     return null // aw..
   }
   // replace the coordinate to the corresponding mvg station's coordinate...

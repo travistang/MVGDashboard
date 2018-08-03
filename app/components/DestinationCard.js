@@ -102,19 +102,23 @@ export default class DestinationCard extends React.Component {
       onBlur: this.onBlur
     }
     if(this.isEdit())
+
     return (
       <Well bsSize="large">
         <Form inline>
           <FormGroup>
             <ControlLabel>
               Station Name:
-            </ControlLabel>
+            </ControlLabel>{' '}
             <StationSelection onSelect={this.props.onSelect} />
-            <Button onClick={this.props.onCancel}>
-              <Glyphicon glyph="remove" />
-            </Button>
           </FormGroup>
+
         </Form>
+        <div style={{paddingTop: 16}}>
+          <Button pullRight onClick={this.props.onCancel}>
+            <Glyphicon glyph="remove" />
+          </Button>
+        </div>
       </Well>
     )
     // component that renders travel time of this connection

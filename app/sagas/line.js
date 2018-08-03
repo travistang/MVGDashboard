@@ -13,8 +13,6 @@ export function* fetchEncodings() {
     if(result) yield put({type: MVGAction.GET_LINE_ENCODING_SUCCESS,result})
     else yield put({type: MVGAction.GET_LINE_ENCODING_FAILED})
   } catch(e) {
-    console.log('fetching encoding failed with reason')
-    console.log(e)
     yield put({type: MVGAction.GET_LINE_ENCODING_FAILED,error:e})
   }
 }
@@ -31,8 +29,6 @@ export function* getLineInfo(action) {
 
   } catch(e) {
     // just for some logging purposes
-    console.log(`getLineInfoSaga got error`)
-    console.log(e)
     yield put({type: MVGAction.GET_LINE_FAILED,line: action.line,error: e})
   }
 }
@@ -57,12 +53,8 @@ export function* getLineInfo(action) {
 export function* getLineInfoOnGetConnectionSuccess(action) {
   let connections = action.connections
   if(!connections) {
-    console.log('on get connection success has no connection....')
-    console.log(action)
     return
   }
-  console.log('getLineInfoOnGetConnectionSuccess connection:')
-  console.log(connections)
   // get all the LABELS from the connection part list
   let lines = Utils.flattenList(
     Object.values(connections)[0].map(conn => // one of the connections

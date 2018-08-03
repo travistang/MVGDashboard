@@ -33,8 +33,10 @@ export default {
       flexDirection: "column",
       inputField: {
         flex: "0 0 20%",
+        paddingBottom: 16,
       },
       map: {
+        paddingTop:16,
         flex: "0 0 80%",
       }
     }
