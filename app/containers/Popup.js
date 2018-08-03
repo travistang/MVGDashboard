@@ -4,7 +4,8 @@ import Popup from '../components/Popup'
 import * as LocationAction from '../actions/location'
 function mapStateToProps(state) {
   return {
-    closestStations: state.mvg.closest_stations
+    closestStations: state.mvg.closest_stations,
+    stations: state.mvg.stations
   }
 }
 

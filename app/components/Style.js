@@ -30,8 +30,13 @@ export default {
   modal: {
     container: {
       display: "flex",
-      flexDirection: "center",
-
+      flexDirection: "column",
+      inputField: {
+        flex: "0 0 20%",
+      },
+      map: {
+        flex: "0 0 80%",
+      }
     }
   },
   stationSelection: {

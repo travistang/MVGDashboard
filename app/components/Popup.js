@@ -7,15 +7,31 @@ import {
   InputGroup,
   ControlLabel,
 } from 'react-bootstrap'
+import {
+  Map,
+  TileLayer,
+  Marker,
+  Popup as MapPopup
+} from 'react-leaflet'
 import style from './Style'
 import StationSelection from '../containers/StationSelection'
+import API from '../api'
 export default class Popup extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       defaultLocation: null,
       stationChosen: null,
+      mapCenter: props.closestStations && this.getStationLocation(props.closestStations[0]),
+      displayMarker: [],
     }
+    this.apiInstance = new API()
+  }
+  getStationLocation(station) {
+    return [
+      station.latitude,
+      station.longitude,
+    ]
   }
   onStationChosen(station) {
     this.setState({...this.state,stationChosen:station})
@@ -23,9 +39,33 @@ export default class Popup extends React.Component {
   setLocation() {
     if(!this.state.stationChosen) return
     let {latitude,longitude} = this.state.stationChosen
-    console.log('location of station chosen')
-    console.log(latitude, " ",longitude)
     this.props.setLocation(latitude,longitude)
+  }
+  async onMapMoveEnd({center},zoom) {
+    let closestStationsToMapCenter = await this.apiInstance.getClosestStations(center[0],center[1],this.props.stations,15)
+    this.setState({...this.state,displayMarker:closestStationsToMapCenter})
+  }
+  getMap() {
+    return (
+      <Map
+        zoomControl={false}
+        onViewportChanged={this.onMapMoveEnd.bind(this)}
+        center={this.state.mapCenter}
+        zoom={11}
+        style={{height:"70vh"}}
+      >
+        <TileLayer
+          url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+        />
+        {
+          this.state.displayMarker.map(station => (
+            <Marker
+              position={this.getStationLocation(station)}
+            />
+          ))
+        }
+      </Map>
+    )
   }
   render() {
     return (
@@ -35,7 +75,7 @@ export default class Popup extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <div style={style.modal.container}>
-            <div>
+            <div style={style.modal.inputField}>
               <Form inline>
                 <FormGroup>
 
@@ -45,7 +85,8 @@ export default class Popup extends React.Component {
               </Form>
 
             </div>
-            <div>
+            <div style={style.modal.map}>
+              {this.getMap()}
             </div>
           </div>
 
