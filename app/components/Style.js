@@ -25,7 +25,7 @@ export default {
   app: {
     display: "flex",
     flexDirection: "column",
-
+    overflowX: "hidden"
   },
   modal: {
     container: {
@@ -272,7 +272,7 @@ export default {
   mainContainer: {
     flex: 1,
     position: "absolute",
-
+    overflowX: "hidden",
     top: "62px", // this is the offset for the nav bar
     width: "100%",
     bottom: 0,
