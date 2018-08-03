@@ -41,6 +41,19 @@ export default {
       }
     }
   },
+  tooltip: {
+
+    container: {
+      ...centerContentStyle,
+      flexDirection: "column",
+      overview: {
+        flex: 1,
+      },
+      departureTime: {
+        flex: 1,
+      }
+    },
+  },
   stationSelection: {
     display: "flex",
     labels: {

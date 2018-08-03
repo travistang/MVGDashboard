@@ -157,7 +157,10 @@ function* onComputeLineSegment() {
       // mark has updated
       hasUpdate = true
       coords = lineInstance.computeLineSegment(part.from.id,part.to.id,part.label,lines,stations)
-      if(!coords) return // can't compute this, give up
+      if(!coords) {
+        // couldnt get anything, give a straight line then...
+        coords = [Utils.getStationLatLng(part.from),Utils.getStationLatLng(part.to)]
+      } // can't compute this, give up
     }
     currentParts[partLabel] = {
       from: part.from.id,

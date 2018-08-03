@@ -41,6 +41,17 @@ export default class DestinationList extends React.Component {
     this.props.getDestinations()
 
   }
+  getConnectionTooltipRemainingDepartureTime(station) {
+    let id = station.id
+    let connections = this.props.connections[id]
+    if(!connections) return ''
+    let connection = connections
+          .filter(conn => conn.departure > this.props.currentTime)
+          .sort((conA,conB) => conA.arrival - conB.arrival)[0]
+
+    return Utils.timeDifferenceToDateHHMMSS(this.props.currentTime,connection.departure)
+
+  }
   // the "map" mode component
   // which displays the fastest route to the destination
   getMap() {
@@ -58,23 +69,32 @@ export default class DestinationList extends React.Component {
         <TileLayer
           url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'
         />
+
         <Marker
           position={[lat,lng]}
           draggable={false}
         >
-          <Tooltip permanent>
+          <Tooltip>
             You are here
           </Tooltip>
         </Marker>
         <Circle radius={2000} center={[lat,lng]}>
         </Circle>
+
         {this.props.destinations.map(dest => (
           <Marker
             draggable={false}
             position={[dest.latitude,dest.longitude]}
           >
             <Tooltip permanent>
-                {dest.name}
+              <div style={style.tooltip.container}>
+                <div style={style.tooltip.container.overview}>
+                  {Utils.getStationOverviewComponent(dest)}
+                </div>
+                <div style={style.tooltip.container.departureTime}>
+                  {this.getConnectionTooltipRemainingDepartureTime(dest)}
+                </div>
+              </div>
             </Tooltip>
           </Marker>
         ))}

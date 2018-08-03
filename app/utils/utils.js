@@ -187,6 +187,9 @@ export const getConnectionPartCacheLabel = (part) => {
   return cacheLabel
 }
 
+export const getStationLatLng = (station) => {
+  return [station.latitude,station.longitude]
+}
 export const getStationOverviewComponent = (station) => {
   return (
     <div style={style.stationSelection}>
