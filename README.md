@@ -2,4 +2,5 @@
 An electron app displaying departures from stations around you
 
 ## Screenshots
-
+![alt text](https://raw.githubusercontent.com/travistang/MVGDashboard/master/ss1.png)
+![alt text](https://raw.githubusercontent.com/travistang/MVGDashboard/master/ss2.png)
