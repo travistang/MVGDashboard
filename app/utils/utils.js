@@ -1,6 +1,6 @@
 import React from 'react'
 import LineTag from '../components/LineTag'
-
+import style from '../components/Style'
 export const getStationName = (station) => {
   let {name,place} = station
   if(!name || ! place) return ""
@@ -25,6 +25,7 @@ export const getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) => {
   var d = R * c; // Distance in km
   return d;
 }
+
 
 export const getProductColorCode = (product) => {
   switch(product) {
@@ -155,10 +156,7 @@ export const listOfN = (n) => [...Array(n + 1).keys()].slice(1)
 export const convertMVVStationToMVGStation = (mvvStation,mvgStationList) => {
   let correspondingMVGStation
   try {
-    console.log('mvgStationList')
-    console.log(mvgStationList)
-    console.log('parseint result')
-    console.log(parseInt(mvvStation.ref.id) % 1e5)
+
     correspondingMVGStation = mvgStationList.find(mvgS => mvgS.id == parseInt(mvvStation.ref.id) % 1e5)
   } catch(e) {
     console.log('convert mvv stations to mvg station failed with error')
@@ -189,4 +187,19 @@ export const getConnectionPartCacheLabel = (part) => {
       toStationId   = part.to.id,
       cacheLabel = `${fromStationId}-${toStationId}-${part.label}`
   return cacheLabel
+}
+
+export const getStationOverviewComponent = (station) => {
+  return (
+    <div style={style.stationSelection}>
+
+      <div style={style.stationSelection.labels}>
+        {getStationProductLineTags(station)}
+      </div>
+      <div style={style.stationSelection.name}>
+        {station.name}
+      </div>
+
+     </div>
+  )
 }

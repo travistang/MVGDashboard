@@ -11,11 +11,14 @@ import {
   Map,
   TileLayer,
   Marker,
+  DivOverlay,
+  Tooltip,
   Popup as MapPopup
 } from 'react-leaflet'
 import style from './Style'
 import StationSelection from '../containers/StationSelection'
 import API from '../api'
+import * as Utils from '../utils/utils'
 export default class Popup extends React.Component {
   constructor(props) {
     super(props)
@@ -24,6 +27,7 @@ export default class Popup extends React.Component {
       stationChosen: null,
       mapCenter: props.closestStations && this.getStationLocation(props.closestStations[0]),
       displayMarker: [],
+      value: '' // not the station chosen, for input field only
     }
     this.apiInstance = new API()
   }
@@ -34,7 +38,10 @@ export default class Popup extends React.Component {
     ]
   }
   onStationChosen(station) {
-    this.setState({...this.state,stationChosen:station})
+    this.setState({...this.state,
+      stationChosen:station,
+      value: Utils.getStationName(station),
+      mapCenter: this.getStationLocation(station)})
   }
   setLocation() {
     if(!this.state.stationChosen) return
@@ -60,12 +67,27 @@ export default class Popup extends React.Component {
         {
           this.state.displayMarker.map(station => (
             <Marker
+              onClick={() => this.onStationChosen(station)}
+
               position={this.getStationLocation(station)}
-            />
-          ))
+            >
+              <Tooltip permanent>
+                <div >
+                  {Utils.getStationOverviewComponent(station)}
+                </div>
+
+              </Tooltip>
+            </Marker>)
+          )
         }
       </Map>
     )
+  }
+  onInputFieldChange(inputFieldState) {
+    this.setState({
+      value: inputFieldState.value,
+      mapCenter: inputFieldState.suggestions.length && this.getStationLocation(inputFieldState.suggestions[0])
+    })
   }
   render() {
     return (
@@ -80,7 +102,10 @@ export default class Popup extends React.Component {
                 <FormGroup>
 
                   <ControlLabel> Choose the station that is closest to you:</ControlLabel>
-                  <StationSelection onSelect={this.onStationChosen.bind(this)}/>
+                  <StationSelection
+                    value={this.state.value}
+                    onChange={this.onInputFieldChange.bind(this)}
+                    onSelect={this.onStationChosen.bind(this)}/>
                 </FormGroup>
               </Form>
 

@@ -17,21 +17,11 @@ export default class StationSelection extends React.Component {
     }
   }
   renderSuggestion = (station) => {
-    return(
-      <div style={style.stationSelection}>
-
-      <div style={style.stationSelection.labels}>
-      {Utils.getStationProductLineTags(station)}
-      </div>
-      <div style={style.stationSelection.name}>
-        {station.name}
-      </div>
-
-       </div>)
+    return Utils.getStationOverviewComponent(station)
   }
 
   getSuggestionValue = (station) => {
-    return station.name
+    return station.id
   }
 
   onSuggestionsClearRequested = () => {
@@ -40,15 +30,26 @@ export default class StationSelection extends React.Component {
     });
   }
   onChange = (event, {newValue,method}) => {
+    console.log('new value')
+    console.log(newValue)
     if('click,enter'.split(',').indexOf(method) != -1) {
       let stationObj = this.getStationObjFromName(newValue)
       if(stationObj) this.props.onSelect(stationObj)
     }
-    this.setState({
-      value: newValue
-    })
+    else if(this.props.value == null) { // this is not given
+      this.setState({
+        value: newValue
+      })
+    } else if(this.props.onChange){
+      this.props.onChange({
+        value: newValue,
+        suggestions: this.state.suggestions
+      }) // this gives the input value only!
+    }
   }
   onSuggestionsFetchRequested = ({value}) => {
+    console.log('suggestions fetch requested:')
+    console.log(value)
     let searchString = value.trim().toLowerCase()
     if(searchString.length == 0) return []
     let suggestions = this.props.stations
@@ -62,13 +63,15 @@ export default class StationSelection extends React.Component {
     })
   }
   getStationObjFromName(val) {
-    let station = this.props.stations.find(s => s.name.trim().toLowerCase() == val)
+    // let station = this.props.stations.find(s => s.name.trim().toLowerCase() == val)
+    let station = this.props.stations.find(s => s.id == val)
     if(station) {
       return station
     }
   }
   render() {
-    const { value, suggestions } = this.state
+    let { value, suggestions } = this.state
+    if(this.props.value) value = this.props.value // use an external one if it is given
     const inputProps = {
       placeholder: "Give a station name",
       value,

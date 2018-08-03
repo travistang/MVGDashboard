@@ -115,7 +115,7 @@ export default {
     },
     input: {
       container: {
-        position: 'relative'
+        position: 'relative',
       },
       input: {
         width: 240,
@@ -142,6 +142,7 @@ export default {
       },
       suggestionsContainerOpen: {
         display: 'block',
+        zIndex: 1000,
         position: 'absolute',
         top: 40,
         width: 280,
@@ -153,7 +154,6 @@ export default {
         fontSize: 16,
         borderBottomLeftRadius: 4,
         borderBottomRightRadius: 4,
-        zIndex: 2
       },
       suggestionsList: {
         margin: 0,
