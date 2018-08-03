@@ -12,6 +12,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    toggleChangeLocation: () => dispatch({type: LocationAction.TOGGLE_LOCATION_MODE})
+
   }
 }
+
+export default connect(mapStateToProps,mapDispatchToProps)(StationSelection)

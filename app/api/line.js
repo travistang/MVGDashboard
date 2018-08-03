@@ -17,8 +17,7 @@ export default class {
   // this function reads from the cache, if theres nothing it wont try to fetch something new
   async getLineInfoEncode(line) {
     let encodeDict = await Store.getPromise(this.storeEncodeKey)
-    console.log('encodde dict')
-    console.log(encodeDict)
+
     // don't have to check whether the object is empty or not,
     // because even if it is the effect is Object.keys will return an empty array
     return Object.keys(encodeDict).filter(key => encodeDict[key] == line)
@@ -26,7 +25,6 @@ export default class {
   // some scraping of the regional bus xhr...
   async fetchRegionalBusEncodings() {
     try {
-      console.log('fetching regional bus encodings')
       let response = await this.performRequest(this.encodingEndpoint,false)
       let $ = cheerio.load(response)
       let resultObj = Object.assign(

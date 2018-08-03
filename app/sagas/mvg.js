@@ -35,7 +35,10 @@ export function* fetchStation() {
 }
 // TODO: get the location from store
 function* getGeoLocation() {
+  // location should then be {lat,lng}
   let location = yield call(LocationSaga.getLocation)
+  console.log('get geolocation g')
+  console.log(location)
   if(!location) {
     // default location :)
     return {

@@ -12,9 +12,10 @@ import {
   Well,
   FormGroup,
   ControlLabel,
+  Modal
 } from 'react-bootstrap'
 import style from './Style.js';
-
+import SelectLocationPopup from '../containers/Popup'
 import ImageWithText from './ImageWithText'
 import InformationOverlay from './InformationOverlay'
 import StationCard from './StationCard'
@@ -32,6 +33,7 @@ export default class Home extends Component<Props> {
     this.state = {
       numDeparturesShown: 5,
       departurePage: 1,
+      showPopup: false,
     }
   }
   getNextRefreshTime() {
@@ -139,6 +141,13 @@ export default class Home extends Component<Props> {
       </Map>
     )
   }
+
+  selectLocation() {
+    this.setState({...this.state,showPopup: true})
+  }
+  hidePopup() {
+    this.setState({...this.state,showPopup: false})
+  }
   leftContainer() {
     if(this.props.closest_stations.length == 0) return null
     let closestStation = this.props.closest_stations[0]
@@ -148,7 +157,7 @@ export default class Home extends Component<Props> {
       <div style={style.mainContainer.leftContainer}>
         <div style={style.mainContainer.leftContainer.topContainer}>
           <div
-            onClick={this.props.toggleChangeLocation}
+            onClick={this.selectLocation.bind(this)}
             style={style.mainContainer.leftContainer.topContainer.overlay}
           >
             <h6> You are around </h6>
@@ -222,11 +231,17 @@ export default class Home extends Component<Props> {
       </div>
     )
   }
+  popup() {
+    return (
+      <SelectLocationPopup onHide={this.hidePopup.bind(this)} />
+    )
+  }
   render() {
     return (
       <div style={style.app}>
         {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
         {this.navBar()}
+        {this.state.showPopup && this.popup()}
         <div style={style.mainContainer}>
           {this.leftContainer()}
           {this.rightContainer()}

@@ -23,7 +23,10 @@ import {
   clearDestinationWatcher,
   removeDestinationWatcher,
 } from './destination'
-
+import {
+  setLocationWatcher,
+  setLocationSuccessWatcher,
+} from './location'
 import {
   getLineWatcher,
   getLineOnGetConnectionSuccessWatcher,
@@ -86,7 +89,7 @@ export function* mainLoop() {
       console.log(e)
       yield mainLoop()
     }
-    
+
   }
 }
 export default function* rootSaga(getState) {
@@ -116,6 +119,9 @@ export default function* rootSaga(getState) {
     watchComputeLineSegment(),
     watchDestinationAdd(),
     watchDestinationRemove(),
+    // location watcher
+    setLocationWatcher(),
+    setLocationSuccessWatcher(),
     // of course the main loop for ticking the clock and perform regular update
     mainLoop()
   ]

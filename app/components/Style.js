@@ -27,6 +27,27 @@ export default {
     flexDirection: "column",
 
   },
+  modal: {
+    container: {
+      display: "flex",
+      flexDirection: "center",
+
+    }
+  },
+  stationSelection: {
+    display: "flex",
+    labels: {
+      flex: 1,
+      display: "flex",
+      flexWrap: "wrap",
+      color: "white"
+    },
+    name: {
+      flex: 1,
+      textTransform: "capitalize",
+      ...centerContentStyle
+    }
+  },
   destinationList: {
     header: {
       display: "flex",

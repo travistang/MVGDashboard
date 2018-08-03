@@ -36,7 +36,7 @@ export const getProductColorCode = (product) => {
       return "#0d5c70"
     case 'TRAM':
       return "#ea4029"
-    default: return ""
+    default: return "#222"
   }
 }
 // hardcoding this list is easier than obtaining it programmatically...

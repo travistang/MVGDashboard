@@ -38,7 +38,7 @@ export default class {
     if(response.error || !response.connectionList) return response
     return response.connectionList // the "connectionPartList" inside each element will be useful
   }
-  
+
   async getDepartureById(id,numDepartures = -1) {
     let url = this.getDepartureEndpointById(id)
     let response = await this.performRequest(url)
@@ -94,7 +94,7 @@ export default class {
             })
           }
 
-        } else reject({error,statusCode: response.statusCode})
+        } else resolve({error,statusCode: response.statusCode})
       })
     })
   }
