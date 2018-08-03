@@ -73,9 +73,9 @@ export default class DestinationList extends React.Component {
             draggable={false}
             position={[dest.latitude,dest.longitude]}
           >
-            <Popup permanent>
+            <Tooltip permanent>
                 {dest.name}
-            </Popup>
+            </Tooltip>
           </Marker>
         ))}
 
@@ -87,9 +87,9 @@ export default class DestinationList extends React.Component {
                 color={Utils.getColor(part.label)}
                 positions={part.coords}
               >
-                <Popup>
+                <Tooltip>
                   {part.label}
-                </Popup>
+                </Tooltip>
               </Polyline>
             ))
 

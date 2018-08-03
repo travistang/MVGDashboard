@@ -30,6 +30,7 @@ export default class StationSelection extends React.Component {
     });
   }
   onChange = (event, {newValue,method}) => {
+    if('up,down'.split(',').indexOf(method) != -1) return // no change here..
     if('click,enter'.split(',').indexOf(method) != -1) {
       let stationObj = this.getStationObjFromName(newValue)
       if(stationObj) this.props.onSelect(stationObj)
@@ -65,6 +66,12 @@ export default class StationSelection extends React.Component {
       return station
     }
   }
+  onSuggestionHighlighted({suggestion}) {
+    if(this.props.onChange && this.props.value && suggestion) this.props.onChange({
+      value: this.props.value,
+      suggestions: [suggestion]
+    })
+  }
   render() {
     let { value, suggestions } = this.state
     if(this.props.value) value = this.props.value // use an external one if it is given
@@ -80,6 +87,7 @@ export default class StationSelection extends React.Component {
         suggestions={this.state.suggestions}
         onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
         onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
+        onSuggestionHighlighted={this.onSuggestionHighlighted.bind(this)}
         getSuggestionValue={this.getSuggestionValue}
         renderSuggestion={this.renderSuggestion}
         inputProps={inputProps}
