@@ -88,13 +88,13 @@ export default class {
             resolve(res)
           } catch (e) {
             // cannot parse response
-            reject({
+            resolve({
               error: "Unable to parse json",
               body: body
             })
           }
 
-        } else resolve({error,statusCode: response.statusCode})
+        } else resolve({error})
       })
     })
   }

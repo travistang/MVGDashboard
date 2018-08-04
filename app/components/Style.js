@@ -20,6 +20,16 @@ let tokenList = {
     justifyContent: "spaceAround",
     alignItems: "flexStart"
 }
+let cell = {
+  ...centerContentStyle,
+  display: "flex",
+  flexDirection: "column",
+  width: 40,
+  height: 40,
+  padding: 4,
+  fontWeight: "bold"
+}
+
 export default {
   tokenList,
   app: {
@@ -44,6 +54,7 @@ export default {
   tooltip: {
 
     container: {
+      // width: 120,
       ...centerContentStyle,
       flexDirection: "column",
       overview: {
@@ -51,6 +62,20 @@ export default {
       },
       departureTime: {
         flex: 1,
+        display: "flex",
+        justifyContent:"space-between",
+
+        left: {
+          ...cell,
+          borderRight: "1px solid #333"
+        },
+        right: {
+          ...cell,
+          borderLeft: "1px solid #333",
+        },
+        center: {
+          ...cell
+        }
       }
     },
   },

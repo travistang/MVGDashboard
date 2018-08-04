@@ -8,8 +8,8 @@ import {
   Button,
   ButtonGroup,
   Pagination,
-  Glyphicon
 } from 'react-bootstrap'
+import Glyphicon from 'react-bootstrap/lib/Glyphicon'
 import {
   Map,
   TileLayer,
@@ -41,16 +41,31 @@ export default class DestinationList extends React.Component {
     this.props.getDestinations()
 
   }
-  getConnectionTooltipRemainingDepartureTime(station) {
+  getConnections(station) {
     let id = station.id
     let connections = this.props.connections[id]
-    if(!connections) return ''
-    let connection = connections
-          .filter(conn => conn.departure > this.props.currentTime)
-          .sort((conA,conB) => conA.arrival - conB.arrival)[0]
-
+    if(!connections) return null
+    connections = connections
+      .filter(conn => conn.departure > this.props.currentTime)
+      .sort((conA,conB) => conA.arrival - conB.arrival)
+    return connections
+  }
+  getConnectionTooltipRemainingDepartureTime(station) {
+    let connections = this.getConnections(station)
+    if(!connections) return 'N/A'
+    let connection = connections[0]
     return Utils.timeDifferenceToDateHHMMSS(this.props.currentTime,connection.departure)
 
+  }
+  getArrivalTime(station,i = 0) {
+    let connections = this.getConnections(station)
+    if(!connections || connections.length < i) return 'N/A'
+    return Utils.unixTimeStampToDateHHMM(connections[i].arrival)
+  }
+  getTravelTime(station,i = 0) {
+    let connections = this.getConnections(station)
+    if(!connections || connections.length < i) return 'N/A'
+    return Utils.timeDifferenceFormatString(connections[i].departure,connections[i].arrival)
   }
   // the "map" mode component
   // which displays the fastest route to the destination
@@ -89,10 +104,26 @@ export default class DestinationList extends React.Component {
             <Tooltip permanent>
               <div style={style.tooltip.container}>
                 <div style={style.tooltip.container.overview}>
-                  {Utils.getStationOverviewComponent(dest)}
+                  {
+                    // Utils.getStationOverviewComponent(dest)
+                    dest.name
+                  }
                 </div>
                 <div style={style.tooltip.container.departureTime}>
-                  {this.getConnectionTooltipRemainingDepartureTime(dest)}
+                  <div style={style.tooltip.container.departureTime.left}>
+                    <Glyphicon glyph="time" />
+                    {this.getConnectionTooltipRemainingDepartureTime(dest)}
+                  </div>
+
+                  <div style={style.tooltip.container.departureTime.center}>
+                    <Glyphicon glyph="flag" />
+                    {this.getArrivalTime(dest)}
+                  </div>
+
+                  <div style={style.tooltip.container.departureTime.right}>
+                    <Glyphicon glyph="transfer" />
+                    {this.getTravelTime(dest)}
+                  </div>
                 </div>
               </div>
             </Tooltip>

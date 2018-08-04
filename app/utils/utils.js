@@ -144,7 +144,13 @@ export const timeDifferenceToDateString = (timeA,timeB) => {
     hh,mm,ss,hasPassed
   }
 }
-
+export const timeDifferenceFormatString = (timeA,timeB) => {
+  let {hh,mm,ss,hasPassed} = timeDifferenceToDateString(timeA,timeB)
+  let res = hasPassed?"-":"" // if time diff is negative, add a "-" in front
+  if(hh == 0 && mm <= 1) return `< ${res}1min`
+  if(hh > 0) return (`${res}${hh}:${mm}h`)
+  return `${res}${mm}min`
+}
 export const timeDifferenceToDateHHMMSS = (timeA,timeB) => {
   let {hh,mm,ss,hasPassed} = timeDifferenceToDateString(timeA,timeB)
   let res = hasPassed?"-":"" // if time diff is negative, add a "-" in front
