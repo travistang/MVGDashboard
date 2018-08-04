@@ -56,7 +56,7 @@ export default class Popup extends React.Component {
         onViewportChanged={this.onMapMoveEnd.bind(this)}
         center={this.state.mapCenter}
         zoom={11}
-        style={{height:"70vh"}}
+        style={{height:"60vh"}}
       >
         <TileLayer
           url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'

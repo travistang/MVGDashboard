@@ -32,16 +32,21 @@ export default function mvg(state = defaultState,action) {
     case MVGAction.SET_CURRENT_LOCATION:
       return {...state,lat: action.lat,lng: action.lng}
     case MVGAction.GET_DEPARTURES_SUCCESS:
-      return {...state,departures: action.departures}
+      return {...state,departures: action.departures,error: null}
     case MVGAction.GET_CONNECTION_FAILED:
       return {...state,error: action.error}
     case MVGAction.GET_CONNECTION_SUCCESS:
       return {
         ...state,
+        error: null,
         connections: {...state.connections,...action.connections}
       }
     case MVGAction.GET_LINE_SUCCESS:
-      return {...state,lines: {...state.lines,[action.name]:action.line}}
+      return {
+        ...state,
+        error: null,
+        lines: {...state.lines,[action.name]:action.line}
+      }
     case MVGAction.SET_LINE_SEGMENT_CACHE:
       return {...state,connectionLines: Object.assign({},action.connectionLines)}
     default: return state

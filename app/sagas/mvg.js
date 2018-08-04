@@ -91,7 +91,11 @@ function* onGetDepartures() {
   if(closestStations && closestStations.length) {
     let closestStationsId = closestStations.map(s => s.id)
     let departures = yield all(closestStationsId.map(id => call(apiInstance.getDepartureById.bind(apiInstance),id)))
-
+    if(!departures || !departures.length) {
+      // unable to get departures...
+      yield put({type: MVGAction.GET_DEPARTURES_FAILED})
+      return
+    }
     let departureLists = Utils.flattenList(departures.filter(d => !d.error))
       .sort((a,b) => a.departureTime - b.departureTime)
       .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures

@@ -117,7 +117,7 @@ export const getStationProductLineTags = (station) => {
 }
 
 export const flattenList = (lists) => {
-  return lists.reduce((a,b) => ([...a,...b]))
+  return lists.reduce((a,b) => ([...a,...b]),[])
 }
 
 export const unixTimeStampToDate = (ts) => new Date(ts)

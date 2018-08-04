@@ -143,7 +143,7 @@ export default class {
   // given a connection (from station to station),lines (containing stations of all lines), and the cache (from state)
   // give a computed new line segments
   computeLineSegment(fromStationId,toStationId,label,lines,stations) {
-      if (!lines[label]) return null
+      if (!lines[label] || !lines[label].length) return null
       let mvvStations     = lines[label][0].points
       if(!mvvStations) return null // sorry no such line
       let mvvStationParts = mvvStations

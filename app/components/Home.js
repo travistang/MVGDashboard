@@ -99,9 +99,11 @@ export default class Home extends Component<Props> {
         title: "Loading Stations from MVG..."
       }
     } else {
+      console.log('displaying error:')
+      console.log(this.props.error)
       props = {
         overlayType: "error",
-        title: this.props.error
+        title: this.props.error.toString()
       }
     }
     return (
