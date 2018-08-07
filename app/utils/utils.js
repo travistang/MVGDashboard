@@ -46,6 +46,12 @@ export const getProductColorCode = (product) => {
   for buses, trams and the rest they usually use a unified color.
 */
 export const getColor = (line) => {
+  if(line.indexOf('-') > 0) {
+    // SEV cases..
+    line = line.split('-')[0]
+    console.log('sev line')
+    console.log(line)
+  }
   switch(line) {
     case 'U1':
     case 'U7':
@@ -189,7 +195,7 @@ export const getStationsBetween = (fromId,toId,mvvStations) => {
 export const getConnectionPartCacheLabel = (part) => {
   let fromStationId = part.from.id,
       toStationId   = part.to.id,
-      cacheLabel = `${fromStationId}-${toStationId}-${part.label}`
+      cacheLabel = `${fromStationId}-${toStationId}-${part.label.split('-')[0]}` // for dealing with the SEV case...
   return cacheLabel
 }
 
