@@ -52,14 +52,14 @@ export default class DestinationCard extends React.Component {
       if(part.connectionPartType == "FOOTWAY") return walkingComponent // sorry you have to walk...
       else { // i think this is a transportation, now lets look at the part..
         let label = part.label
-        // TODO: how to properly get the color of this transport!?
         return <LineTag backgroundColor={Utils.getColor(label)} line={label} />
       }
     })
     .map(part => <div style={style.destinationCard.transportationList}> {part} </div>)
     // make the "intermediateComponent" (i.e. arrow) and part components go one after another
     let res = partComponents.reduce((list,part) => list.concat(part,intermediateComponent),[])
-    res.pop()
+    res.pop() // why? because for the above lines one part label and one arrow is added for each part.
+    // But I dont want the last arrow to be there, thats why I pop..
     return res
   }
   // if theres a connection for this dest,

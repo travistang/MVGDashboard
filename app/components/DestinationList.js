@@ -8,8 +8,8 @@ import {
   Button,
   ButtonGroup,
   Pagination,
-  Glyphicon
 } from 'react-bootstrap'
+import Glyphicon from 'react-bootstrap/lib/Glyphicon'
 import {
   Map,
   TileLayer,
@@ -41,6 +41,32 @@ export default class DestinationList extends React.Component {
     this.props.getDestinations()
 
   }
+  getConnections(station) {
+    let id = station.id
+    let connections = this.props.connections[id]
+    if(!connections || !connections.length) return null
+    connections = connections
+      .filter(conn => conn.departure > this.props.currentTime)
+      .sort((conA,conB) => conA.arrival - conB.arrival)
+    return connections
+  }
+  getConnectionTooltipRemainingDepartureTime(station) {
+    let connections = this.getConnections(station)
+    if(!connections) return 'N/A'
+    let connection = connections[0]
+    return Utils.timeDifferenceToDateHHMMSS(this.props.currentTime,connection.departure)
+
+  }
+  getArrivalTime(station,i = 0) {
+    let connections = this.getConnections(station)
+    if(!connections || connections.length < i) return 'N/A'
+    return Utils.unixTimeStampToDateHHMM(connections[i].arrival)
+  }
+  getTravelTime(station,i = 0) {
+    let connections = this.getConnections(station)
+    if(!connections || connections.length < i) return 'N/A'
+    return Utils.timeDifferenceFormatString(connections[i].departure,connections[i].arrival)
+  }
   // the "map" mode component
   // which displays the fastest route to the destination
   getMap() {
@@ -58,23 +84,48 @@ export default class DestinationList extends React.Component {
         <TileLayer
           url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'
         />
+
         <Marker
           position={[lat,lng]}
           draggable={false}
         >
-          <Tooltip permanent>
+          <Tooltip>
             You are here
           </Tooltip>
         </Marker>
         <Circle radius={2000} center={[lat,lng]}>
         </Circle>
+
         {this.props.destinations.map(dest => (
           <Marker
             draggable={false}
             position={[dest.latitude,dest.longitude]}
           >
             <Tooltip permanent>
-                {dest.name}
+              <div style={style.tooltip.container}>
+                <div style={style.tooltip.container.overview}>
+                  {
+                    // Utils.getStationOverviewComponent(dest)
+                    dest.name
+                  }
+                </div>
+                <div style={style.tooltip.container.departureTime}>
+                  <div style={style.tooltip.container.departureTime.left}>
+                    <Glyphicon glyph="time" />
+                    {this.getConnectionTooltipRemainingDepartureTime(dest)}
+                  </div>
+
+                  <div style={style.tooltip.container.departureTime.center}>
+                    <Glyphicon glyph="flag" />
+                    {this.getArrivalTime(dest)}
+                  </div>
+
+                  <div style={style.tooltip.container.departureTime.right}>
+                    <Glyphicon glyph="transfer" />
+                    {this.getTravelTime(dest)}
+                  </div>
+                </div>
+              </div>
             </Tooltip>
           </Marker>
         ))}

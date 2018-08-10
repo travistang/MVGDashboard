@@ -91,7 +91,12 @@ function* onGetDepartures() {
   if(closestStations && closestStations.length) {
     let closestStationsId = closestStations.map(s => s.id)
     let departures = yield all(closestStationsId.map(id => call(apiInstance.getDepartureById.bind(apiInstance),id)))
-    let departureLists = Utils.flattenList(departures)
+    if(!departures || !departures.length) {
+      // unable to get departures...
+      yield put({type: MVGAction.GET_DEPARTURES_FAILED})
+      return
+    }
+    let departureLists = Utils.flattenList(departures.filter(d => !d.error))
       .sort((a,b) => a.departureTime - b.departureTime)
       .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures
     yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
@@ -157,7 +162,10 @@ function* onComputeLineSegment() {
       // mark has updated
       hasUpdate = true
       coords = lineInstance.computeLineSegment(part.from.id,part.to.id,part.label,lines,stations)
-      if(!coords) return // can't compute this, give up
+      if(!coords) {
+        // couldnt get anything, give a straight line then...
+        coords = [Utils.getStationLatLng(part.from),Utils.getStationLatLng(part.to)]
+      } // can't compute this, give up
     }
     currentParts[partLabel] = {
       from: part.from.id,

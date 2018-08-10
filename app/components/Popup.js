@@ -32,10 +32,7 @@ export default class Popup extends React.Component {
     this.apiInstance = new API()
   }
   getStationLocation(station) {
-    return [
-      station.latitude,
-      station.longitude,
-    ]
+    return Utils.getStationLatLng(station)
   }
   onStationChosen(station) {
     this.setState({...this.state,
@@ -59,7 +56,7 @@ export default class Popup extends React.Component {
         onViewportChanged={this.onMapMoveEnd.bind(this)}
         center={this.state.mapCenter}
         zoom={11}
-        style={{height:"70vh"}}
+        style={{height:"60vh"}}
       >
         <TileLayer
           url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'
@@ -101,7 +98,7 @@ export default class Popup extends React.Component {
               <Form>
                 <FormGroup>
 
-                  <ControlLabel> Choose the station that is closest to you:</ControlLabel>
+                  <ControlLabel> Choose the station that is the closest to you:</ControlLabel>
                   <StationSelection
                     value={this.state.value}
                     onChange={this.onInputFieldChange.bind(this)}

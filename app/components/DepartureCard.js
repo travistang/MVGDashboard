@@ -30,7 +30,7 @@ export default class DepartureCard extends React.Component {
   lineTag() {
     return (
       <LineTag
-        backgroundColor={this.props.departure.lineBackgroundColor}
+        backgroundColor={Utils.getColor(this.props.departure.label)}
         line={this.props.departure.label}
       />
     )
