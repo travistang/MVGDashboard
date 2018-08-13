@@ -46,7 +46,7 @@ export default class DestinationList extends React.Component {
     let connections = this.props.connections[id]
     if(!connections || !connections.length) return null
     connections = connections
-      .filter(conn => conn.departure > this.props.currentTime)
+      .filter(conn => !!conn && conn.departure > this.props.currentTime)
       .sort((conA,conB) => conA.arrival - conB.arrival)
     return connections
   }
