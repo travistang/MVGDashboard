@@ -1,0 +1,12 @@
+version: '3'
+services:
+        proxy:
+                build: ./cors-proxy
+                ports:
+                        - '9898:3000'
+        dashboard:
+                build: ./build
+                ports:
+                        - '9899:3001'
+                links:
+                        - proxy

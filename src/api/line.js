@@ -1,0 +1,186 @@
+// provide methods for retrieving list of station of a transport line
+const request = require('request')
+const Utils = require('../utils/utils')
+const Store = require('./destination')
+const cheerio = require('cheerio')
+
+export default class {
+
+  constructor() {
+    this.storeEncodeKey = 'encode'
+    this.proxy = "http://localhost:9898/mvv"
+    // this.endpoint = "https://efa.mvv-muenchen.de/ng/XML_GEOOBJECT_REQUEST?"
+    this.endpoint = `${this.proxy}/ng/XML_GEOOBJECT_REQUEST?`
+    // this.encodingEndpoint = "https://efa.mvv-muenchen.de/xhr_regiobuses?zope_command=cached"
+    this.encodingEndpoint = `${this.proxy}/xhr_regiobuses?zope_command=cached`
+    // this.generalEncodingEndpoint = "https://efa.mvv-muenchen.de/"
+    this.generalEncodingEndpoint = `${this.proxy}/index.html`
+    this.header = {
+    }
+  }
+
+  // line should be a human-readable value, say "U2", "S1", "171"...
+  // this function reads from the cache, if theres nothing it wont try to fetch something new
+  async getLineInfoEncode(line) {
+    let encodeDict = await Store.getPromise(this.storeEncodeKey)
+    console.log('get line info encode')
+    console.log(encodeDict)
+    // don't have to check whether the object is empty or not,
+    // because even if it is the effect is Object.keys will return an empty array
+    return Object.keys(encodeDict).filter(key => encodeDict[key] == line)
+  }
+  // some scraping of the regional bus xhr...
+  async fetchRegionalBusEncodings() {
+    try {
+      let response = await this.performRequest(this.encodingEndpoint,false)
+      let $ = cheerio.load(response)
+      let resultObj = Object.assign(
+        ...$('label').map(
+          (i,el) => ({
+            [$(el).find('input').attr('value')]:
+             $(el).find('img').attr('alt')}))
+        .get()
+      )
+      return resultObj
+    } catch(e) {
+      return null
+    }
+  }
+  // some scraping of the general encodings
+  async fetchGeneralEncodings() {
+    console.log('fetch general encoding')
+    try {
+      let response = await this.performRequest(this.generalEncodingEndpoint,false)
+      console.log('response')
+      console.log(response)
+      let $ = cheerio.load(response)
+      let resultObj = Object.assign(
+        ...$('label')
+          .filter((i,el) => $(el).has('input'))
+          .map((i,el) => ({[$(el).find('input').attr('value')]:
+              $(el).find('img').attr('alt')})
+            )
+          .get()
+      )
+      return resultObj
+    } catch(e) {
+      console.log('fetch general encodings failed')
+      console.log(e)
+      return null
+    }
+  }
+  async fetchLineEncodings(useCache = true) {
+    if(useCache) {
+      let data = await Store.getPromise(this.storeEncodeKey)
+      if(Object.keys(data).length) return data
+    }
+    // dont use cache here
+    let responses = await Promise.all([
+      this.fetchRegionalBusEncodings(),
+      this.fetchGeneralEncodings(),
+    ])
+    // aggregate results
+    let resultObj = {...responses[0],...responses[1]}
+    await Store.setPromise(this.storeEncodeKey,resultObj)
+    return resultObj
+
+  }
+  // given a line number, search for its corresponding encoding on MVV and fetch the stations list of it,
+  // this function gives the cached value if there is one
+  async getLineInfo(line, useCache = true) {
+    // try to find the relevant record from cache first
+    if(line.indexOf('-') > 0) {
+      // like and SEV, split and get the first half and try again
+      return await this.getLineInfo(line.split('-')[0],useCache)
+    }
+    if(useCache) {
+      let data = await Store.getPromise(line)
+      // use cache if possible
+      if(Object.keys(data).length > 0) {
+        return data
+      }
+    }
+
+    // no such thing in cache, get and store it
+    // first get the encode cache
+    let encode = await this.getLineInfoEncode(line)
+    if(!encode) return null // no cache sorry, you're out of luck
+    // otherwise fetch the encoding
+    let getRequestURL = encode => `${this.endpoint}&line=${encode}&outputFormat=json&coordListOutputFormat=STRING&hideBannerInfo=1&lineReqType=6&returnSinglePath=1&command=bothdirections`
+
+    try {
+      // perform request, fetch station object, then store it
+
+      let response = await Promise.all(encode.map(getRequestURL).map(this.performRequestJSON.bind(this)))
+      // check if all responses contain expected value, i.e. the geoObjects
+      if(response.some(r => !r.geoObjects)) {
+        return null
+      }
+      // obtain the result by combining all the line together...
+      let finalResult = Utils.flattenList(response.map(r => r.geoObjects.items.map(item => item.item)))
+      // try to cache it
+      await Store.setPromise(line,finalResult)
+      return finalResult
+    } catch(e) {
+      console.log('get line info got error')
+      console.log(e)
+      return null
+    }
+  }
+  performRequestJSON(url) {
+    console.log('request json')
+    console.log(url)
+    return fetch(url,{
+      // mode: 'no-cors',
+      headers: {
+        ...this.header,
+
+      }
+    }).then(response => {
+      // if(!response.ok) throw {error: response,statusCode: response.status}
+      return response.json()
+    })
+    // return new Promise((resolve,reject) => {
+    //   request.get({uri:url,encoding: null},(error,response,body) => {
+    //     if(!error && response.statusCode == 200) {
+    //         try {
+    //           let res = JSON.parse(body)
+    //           resolve(res)
+    //         } catch (e) {
+    //           // cannot parse response
+    //           reject({
+    //             error: "Unable to parse json",
+    //             body: body
+    //           })
+    //         }
+    //     }
+    //     else reject({error,statusCode: response.statusCode})
+    //
+    //   }) // request
+    // }) // promise
+  }
+  performRequest(url) {
+    return fetch(url,
+    {
+      headers: this.header
+    }).then(response => {
+      console.log('response to url:',url)
+      console.log(response)
+      // if(!response.ok) throw {error: response,statusCode: response.status}
+      return response.text()
+    })
+  }
+  // given a connection (from station to station),lines (containing stations of all lines), and the cache (from state)
+  // give a computed new line segments
+  computeLineSegment(fromStationId,toStationId,label,lines,stations) {
+      if (!lines[label] || !lines[label].length) return null
+      let mvvStations     = lines[label][0].points
+      if(!mvvStations) return null // sorry no such line
+      let mvvStationParts = mvvStations
+      // let mvvStationParts = Utils.getStationsBetween(fromStationId,toStationId,mvvStations)
+      if(!mvvStationParts) return null
+      let mvvStationPartsWithCoordinates = mvvStationParts.map(s => Utils.convertMVVStationToMVGStation(s,stations))
+      let coords = mvvStationPartsWithCoordinates.map(s => s.coords)
+      return coords
+  }
+}
