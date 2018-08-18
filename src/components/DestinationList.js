@@ -52,7 +52,7 @@ export default class DestinationList extends React.Component {
   }
   getConnectionTooltipRemainingDepartureTime(station) {
     let connections = this.getConnections(station)
-    if(!connections) return 'N/A'
+    if(!connections || !connections[0]) return 'N/A'
     let connection = connections[0]
     return Utils.timeDifferenceToDateHHMMSS(this.props.currentTime,connection.departure)
 

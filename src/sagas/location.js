@@ -29,6 +29,10 @@ export function* refreshLocation() {
   let destinations = yield select(state => state.destination.destinations)
   // trigger recomputation of destinations
   yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
+  // trigger recomputation of line segments...
+  yield take(MVGAction.GET_CONNECTION_SUCCESS)
+  yield put({type: MVGAction.COMPUTE_LINE_SEGMENT})
+
 }
 
 export function* setLocationWatcher() {

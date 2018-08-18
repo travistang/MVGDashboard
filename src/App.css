@@ -1,6 +1,9 @@
+body {
+    /* font-family: 'M PLUS Rounded 1c', sans-serif !important; */
+}
 .App {
   text-align: center;
-  font-family: 'Oxygen', sans-serif;
+  /* font-family: 'M PLUS Rounded 1c', sans-serif !important; */
 }
 
 .App-logo {
