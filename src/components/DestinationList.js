@@ -59,12 +59,12 @@ export default class DestinationList extends React.Component {
   }
   getArrivalTime(station,i = 0) {
     let connections = this.getConnections(station)
-    if(!connections || connections.length < i) return 'N/A'
+    if(!connections || !connections[i]) return 'N/A'
     return Utils.unixTimeStampToDateHHMM(connections[i].arrival)
   }
   getTravelTime(station,i = 0) {
     let connections = this.getConnections(station)
-    if(!connections || connections.length < i) return 'N/A'
+    if(!connections || !connections[i]) return 'N/A'
     return Utils.timeDifferenceFormatString(connections[i].departure,connections[i].arrival)
   }
   // the "map" mode component
