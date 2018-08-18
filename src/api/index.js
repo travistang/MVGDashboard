@@ -64,7 +64,7 @@ export default class {
       product: line.product
     }))
   }
-  async getClosestStations(lat,lng,stations,number = 3) {
+  getClosestStations(lat,lng,stations,number = 3) {
     if(number <= 0 ) return []
     if(stations.error) return stations // this is an error!
     // now filter the closest
@@ -83,6 +83,7 @@ export default class {
 
     return stationsByDistance.slice(0,number)
   }
+  
   // perform actual requests
   performRequest(url) {
     return fetch(url,{

@@ -127,57 +127,36 @@ function* fetchConnectionsToAllStations(action) {
 
 */
 function* onComputeLineSegment() {
+  // objects storing the way to go from one place to another, in different times, in different ways
   let connections = yield select(state => state.mvg.connections)
-  let cache = yield select(state => state.mvg.connectionLines)
+  // wait wait, this is also the line we're gonna display!
+  // let cache = yield select(state => state.mvg.connectionLines)
+  // this stores the list of stations
   let stations = yield select(state => state.mvg.stations)
   let currentTime = yield select(state => state.clock.currentTime)
+  // this stores the list of stations a transport line is gonna travel through
   let lines = yield select(state => state.mvg.lines)
   let currentParts = {} // try to remove all unnecessary parts by remembering whats the part we have currently
-  let hasUpdate = false
-  if(!connections || !cache || !stations || ! lines) return
-  let earliestConnections
-  try {
-    earliestConnections = Utils.flattenList(
-      Object.keys(connections).map(destId => {
-        let conns = connections[destId].filter(conn => conn.departure > currentTime)
-        if(conns.length == 0) return null
-        // get the first departure
-        let conn = conns[0]
-        return conn.connectionPartList
-      })
-    )
-    .filter(part => !!part)
-    .filter(part => !!part.label) // make sure the labels exist
-    .reduce((acc,part) => { // remove duplicate
-      if(!acc.find(curPart => curPart.label == part.label)) return acc.concat(part)
-      else return acc
-    },[])
-  } catch(e) {
-    return
-  }
-  earliestConnections.forEach(part => {
-    // for each part, get the label...
-    let partLabel = Utils.getConnectionPartCacheLabel(part)
-    // try to search for cache
-    let coords = (cache[partLabel] && cache[partLabel].coords)
-    if(!coords) {
-      // mark has updated
-      hasUpdate = true
-      coords = lineInstance.computeLineSegment(part.from.id,part.to.id,part.label,lines,stations)
-      if(!coords) {
-        // couldnt get anything, give a straight line then...
-        coords = [Utils.getStationLatLng(part.from),Utils.getStationLatLng(part.to)]
-      } // can't compute this, give up
-    }
-    currentParts[partLabel] = {
-      from: part.from.id,
-      to:   part.to.id,
-      label:part.label,
-      // try to see if theres such a cache, if not then compute it
-      coords
-    }
-  })
-    yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:currentParts})
+
+  if(!Object.keys(connections).length || !stations || ! lines) return
+  // The line retrieval part should be done in the lineInstance instead...
+
+  // let earliestConnections
+  // TODO: DO NOT FLATTEN THE LIST OF CONNECTIONS!
+  // Instead map to them
+  let displayLines = Object.assign(...(Object.keys(connections)
+      .map(destId => { // mapping to a list of generators...
+        let firstConnectionParts = lineInstance.getPartsForNthConnection(connections,destId,currentTime,0)
+        let lineForConnection = lineInstance.getLineForConnection(firstConnectionParts,lines,stations)
+        return lineForConnection
+      }) //
+      // then connectionsList is now a list of ... connections, with each of the the earliest connectionPartList
+      .filter(part => !!part) // may or may not be null, if there are no connection between the two places...
+    ) // make sure the labels exist
+  )
+  console.log('display lines')
+  console.log(displayLines)
+  yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:displayLines})
 }
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)

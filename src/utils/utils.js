@@ -179,18 +179,10 @@ export const convertMVVStationToMVGStation = (mvvStation,mvgStationList) => {
   return {...mvvStation, coords: latlngCoord}
 }
 
-export const getStationsBetween = (fromId,toId,mvvStations) => {
-  let mvvStationsIds = mvvStations.map(s => parseInt(s.ref.id) % 1e5 ),
-      fromIdInList = mvvStationsIds.indexOf(fromId),
-      toIdInList   = mvvStationsIds.indexOf(toId),
-      hasInvalid = fromIdInList < 0 || toIdInList < 0
-  if (hasInvalid) return null
-  else return (fromIdInList < toIdInList)?
-    mvvStations.slice(fromIdInList,toIdInList) :
-    mvvStations.slice(toIdInList,fromIdInList)
-}
+
 
 export const getConnectionPartCacheLabel = (part) => {
+  if(!part || !part.label) return null // cannot compute...
   let fromStationId = part.from.id,
       toStationId   = part.to.id,
       cacheLabel = `${fromStationId}-${toStationId}-${part.label.split('-')[0]}` // for dealing with the SEV case...
@@ -213,4 +205,144 @@ export const getStationOverviewComponent = (station) => {
 
      </div>
   )
+}
+// takes a coord string, say '123.456,456.789', and return [123.456,456.789]
+export const coordsStringToCoord = (cs) => {
+  let parts = cs.split(',')
+  return [parseFloat(parts[0]),parseFloat(parts[1])]
+}
+// given a list of coords (float,float)!, find the closest one to the given point(dist)
+// use L1 distance
+// O(n): scan for each coord, mark the closest one's index, and return it
+export const getIndexOfClosestCoords = (coords, sample) => {
+  let dists = coords.map((coord) => Math.abs(coord[0] - sample[0]) + Math.abs(coord[1] - sample[1]))
+  let min = Infinity,argmin = -1
+  dists.forEach((dist,i) => {
+    if(dist < min) {
+      min = dist
+      argmin = i
+    }
+  })
+  return argmin
+}
+
+// given an item, find the coordinates of the smooth path
+/*
+  To do this
+  a. first find the coorespondece of the latlng of stations and the weird coordinates from mvv
+  b. then get the line segment of between from each station parts
+  c. apply the transformation to each of the point, and return the result...
+*/
+export const getSmoothPathCoordsInLatLng = (items,mvvStationParts,mvgStationList) => {
+  // a. first of all, gather the correspondence
+  // a.1. I need a list of [[latlng],[weirdCoords]] for each station
+  let getCorrespondences = (mvgId) => {
+    let mvvStation = items.points.find(mvv => parseInt(mvv.ref.id) % 1e5 == mvgId)
+    let mvgStation = mvgStationList.find(mvg => mvg.id == mvgId)
+    if(!mvvStation || !mvgStation) throw(`no correspondence for ${mvgId}`)
+    // assume theres such station...
+    let weirdCoords  = coordsStringToCoord(mvvStation.ref.coords)
+    let latlngCoords = [mvgStation.latitude,mvgStation.longitude]
+    return {latlng:latlngCoords,weird: weirdCoords}
+  }
+
+  // a.2. I need to find a Matrix A so that A * (weirdCoords) = latlng, by minimizing this Ax = b problem, iteratively...
+  // <stroke>but lets try something easier first: just find a correspondence using the from station and to station</stroke>
+  // The above doesn't work, lets try plan B:
+  // for each stations at the middle, approximate the path points between them as linear, then apply them individually to the points in between
+
+  // matrix are in major order, say x[0][1] is the element at 0-th row, 1-st column
+  let
+      // x = [
+      //       [correspondences[0].weird[0], correspondences[1].weird[0] ],
+      //       [correspondences[0].weird[1], correspondences[1].weird[1] ]
+      //     ],
+      // b = [
+      //       [correspondences[0].latlng[0], correspondences[1].latlng[0] ],
+      //       [correspondences[0].latlng[1], correspondences[1].latlng[1] ]
+      //     ],
+      det = (mat) => mat[0][0] * mat[1][1] - ( mat[0][1] * mat[1][0]),
+      // inverse of a 2*2 mat
+      inv = (mat) => {
+        let d = det(mat)
+        if(d == 0) throw('singular matrix')// singular - but unlikely since the coordinates can't be the same - unless you pass the same station twice...
+        return [
+          [ mat[1][1] / d,-mat[0][1] / d], // d ,-b
+          [-mat[1][0] / d, mat[0][0] / d]  // -c, a
+        ]
+      },
+      // multiplication of 2 2x2 matrices
+      mul = (ma,mb) => {
+        return [
+          [ma[0][0] * mb[0][0] + ma[0][1] * mb[1][0], ma[0][0] * mb[0][1] + ma[0][1] * mb[1][1] ],
+          [ma[1][0] * mb[0][0] + ma[1][1] * mb[1][0], ma[1][0] * mb[0][1] + ma[1][1] * mb[1][1] ]
+        ]
+      },
+      // multiplcation of 2x2 matrices to a 2x1 vector: Ax
+      mul2To1 = (ma,v) => {
+        return [
+          [ma[0][0] * v[0] + ma[0][1] * v[1]],
+          [ma[1][0] * v[0] + ma[1][1] * v[1]]
+        ]
+      },
+      // the linear transform we wanted!
+      getRelationMatrix = (b,x) =>  mul(b,inv(x))
+
+  // b. find the list of [weirdCoords] between fromStationId to toStationId, this can be solved by direct inverse...
+  // b.1. find the closest coordinates in the smooth coord to the tip of the stations...
+  let smoothWeirdCoords = items.paths[0].path.split(' ').map(coordsStringToCoord),
+      /*
+        function for getting the smooth line segment between two points
+        we do the same thing with the alg. that finds a transformation matrix using the correspondence of 2 endpoints,
+        just that we apply it piecewise, so that one matrix is obtained for each space between two stations.
+        The station's latlng will not be changed even without specifiing them explicitly
+        because all matrices found are using the station's correspondences as clue,
+        so the true latlng of the stations will be recovered by each of the matrices
+      */
+      getSmoothLineSegment = (stationsAId,stationsBId) => {
+        let correspondences = [stationsAId,stationsBId].map(getCorrespondences)
+        if(correspondences.some(corr => ! corr)) return null // sorry some of them cannot be converted...
+        let
+            x = [
+                  [correspondences[0].weird[0], correspondences[1].weird[0] ],
+                  [correspondences[0].weird[1], correspondences[1].weird[1] ]
+                ],
+            b = [
+                  [correspondences[0].latlng[0], correspondences[1].latlng[0] ],
+                  [correspondences[0].latlng[1], correspondences[1].latlng[1] ]
+                ],
+            fromIndsInSmoothWeirdCoords = getIndexOfClosestCoords(smoothWeirdCoords,correspondences[0].weird),
+            toIndsInSmoothWeirdCoords   = getIndexOfClosestCoords(smoothWeirdCoords,correspondences[1].weird),
+            // b.2 figure out which side has a larger index, and flip it accordingly
+                applyIndices = ((fromIndsInSmoothWeirdCoords < toIndsInSmoothWeirdCoords)?
+                  [fromIndsInSmoothWeirdCoords,toIndsInSmoothWeirdCoords]:
+                  [toIndsInSmoothWeirdCoords,fromIndsInSmoothWeirdCoords]),
+                // then slice the smooth weird coords to ge the segments between from-to stations
+                smoothWeirdCoordsSegment = smoothWeirdCoords.slice(...applyIndices),
+            // b.3 prepend & append the to stations' coordinates in
+                finalWeirdCoordsSegment = [
+                  correspondences[0].weird,
+                  ...smoothWeirdCoordsSegment,
+                  correspondences[1].weird]
+            // c. transform the segment of weird coordinate to latlng coordinate
+            let latLngSegment = finalWeirdCoordsSegment.map(
+              weird => mul2To1(getRelationMatrix(b,x),weird))
+            // ...and return
+            // why flatten? because it'a a column vector 2 * 1!
+            return latLngSegment.map(latlng => flattenList(latlng))
+      }
+      // now get smooth line segment between stations...
+      let results = []
+      console.log('mvvStationParts')
+      console.log(mvvStationParts)
+      for(let i = 0; i < mvvStationParts.length - 1; i++) {
+        let segment = getSmoothLineSegment(
+          ...mvvStationParts.slice(i,i + 2)
+            .map(part => parseInt(part.ref.id) % 1e5))
+        console.log('segment')
+        console.log(segment)
+        results = results.concat(segment)
+      }
+      return results
+
 }
