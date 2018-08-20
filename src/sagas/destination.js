@@ -51,7 +51,7 @@ export function* removeDestination(action) {
     let id = action.id
     yield call(removePromise,destinationStorageFieldKey,id)
     yield put({type: DestinationAction.GET_DESTINATION})
-    yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS})
+    yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS,connection: id})
   } catch(e) {
     yield put({type: DestinationAction.REMOVE_DESTINATION_FAILED,error: e})
   }

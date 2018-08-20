@@ -20,8 +20,6 @@ export function* fetchStation() {
   if(Object.keys(stations).length == 0) {
     // no stations stored in local storage, fetch from internet
     stations = yield call(apiInstance.getAllStations.bind(apiInstance))
-    console.log('stations')
-    console.log(stations)
     if(stations.error) {
       yield put({type: MVGAction.FETCH_STATION_FAILED,error: stations.error})
     } else {
@@ -108,6 +106,7 @@ function* onGetDepartures() {
 // yield all connections to connections FROM THE CLOSEST STATION once and for all
 // TODO: how about from all closest stations to all destinations?!
 function* fetchConnectionsToAllStations(action) {
+  // let destinations = yield select(state => state.destination.destinations)
   let destinations = action.destinations
   // now destinations should be a list of stations, get the list...
   let destinations_ids = destinations.map(d => d.id)
@@ -127,8 +126,11 @@ function* fetchConnectionsToAllStations(action) {
 
 */
 function* onComputeLineSegment() {
+  // reevaluate the connections
   // objects storing the way to go from one place to another, in different times, in different ways
   let connections = yield select(state => state.mvg.connections)
+  console.log('connections is now')
+  console.log(connections)
   // wait wait, this is also the line we're gonna display!
   // let cache = yield select(state => state.mvg.connectionLines)
   // this stores the list of stations
@@ -136,13 +138,11 @@ function* onComputeLineSegment() {
   let currentTime = yield select(state => state.clock.currentTime)
   // this stores the list of stations a transport line is gonna travel through
   let lines = yield select(state => state.mvg.lines)
-  let currentParts = {} // try to remove all unnecessary parts by remembering whats the part we have currently
 
   if(!Object.keys(connections).length || !stations || ! lines) return
   // The line retrieval part should be done in the lineInstance instead...
 
-  // let earliestConnections
-  // TODO: DO NOT FLATTEN THE LIST OF CONNECTIONS!
+  // DO NOT FLATTEN THE LIST OF CONNECTIONS!
   // Instead map to them
   let displayLines = Object.assign(...(Object.keys(connections)
       .map(destId => { // mapping to a list of generators...
@@ -154,9 +154,16 @@ function* onComputeLineSegment() {
       .filter(part => !!part) // may or may not be null, if there are no connection between the two places...
     ) // make sure the labels exist
   )
-  console.log('display lines')
-  console.log(displayLines)
   yield put({type: MVGAction.SET_LINE_SEGMENT_CACHE,connectionLines:displayLines})
+}
+// this function triggers the reload of all stations
+// which is useful when a list of station has been changed
+function* reloadDestinations() {
+  yield put({type:MVGAction.COMPUTE_LINE_SEGMENT})
+}
+// remove the connection entry from the connection object once its removed
+function* onRemoveDestinationSuccess(action) {
+  yield put({type: MVGAction.REMOVE_CONNECTION,connection: action.connection})
 }
 export function* watchFetchStations() {
   yield takeEvery(MVGAction.GET_STATIONS,fetchStation)
@@ -194,8 +201,8 @@ export function* watchComputeLineSegment() {
 
 // also evaluate line segments again if a station is removed
 export function* watchDestinationRemove() {
-  yield takeLatest(DestinationAction.REMOVE_DESTINATION_SUCCESS,onComputeLineSegment)
+  yield takeLatest(DestinationAction.REMOVE_DESTINATION_SUCCESS,onRemoveDestinationSuccess)
 }
 export function* watchDestinationAdd() {
-  yield takeLatest(DestinationAction.ADD_DESTINATION_SUCCESS,onComputeLineSegment)
+  yield takeLatest(DestinationAction.ADD_DESTINATION_SUCCESS,reloadDestinations)
 }

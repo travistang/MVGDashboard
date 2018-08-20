@@ -49,15 +49,17 @@ export function* getLineInfo(action) {
     ]
   }
 */
-
+// handles connection info on each
 export function* getLineInfoOnGetConnectionSuccess(action) {
   let connections = action.connections
+  console.log('connections')
+  console.log(connections)
   if(!connections) {
     return
   }
   // get all the LABELS from the connection part list
   let lines = Utils.flattenList(
-    Object.values(connections)[0].map(conn => // one of the connections
+    Object.values(connections)[0].map(conn => // one of the connections. why one? because there can only be one...
         conn.connectionPartList.map(part => part.label) // get labels of all part of connections
     )
   )

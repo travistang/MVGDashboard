@@ -333,14 +333,10 @@ export const getSmoothPathCoordsInLatLng = (items,mvvStationParts,mvgStationList
       }
       // now get smooth line segment between stations...
       let results = []
-      console.log('mvvStationParts')
-      console.log(mvvStationParts)
       for(let i = 0; i < mvvStationParts.length - 1; i++) {
         let segment = getSmoothLineSegment(
           ...mvvStationParts.slice(i,i + 2)
             .map(part => parseInt(part.ref.id) % 1e5))
-        console.log('segment')
-        console.log(segment)
         results = results.concat(segment)
       }
       return results

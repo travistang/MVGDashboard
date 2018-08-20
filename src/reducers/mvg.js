@@ -38,6 +38,14 @@ export default function mvg(state = defaultState,action) {
       return {...state,departures: action.departures,error: null}
     case MVGAction.GET_CONNECTION_FAILED:
       return {...state,error: action.error}
+    case MVGAction.REMOVE_CONNECTION:
+      return {
+        ...state,
+        connections: Object.assign(...Object.keys(state.connections)
+          .filter(conn => conn != action.connection) // take away the removed connection
+          .map(conn => ({[conn]: state.connections[conn]})) // get the unaffected connection back
+        )
+      }
     case MVGAction.GET_CONNECTION_SUCCESS:
       return {
         ...state,

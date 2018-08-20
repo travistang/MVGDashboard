@@ -25,11 +25,6 @@ export const getPromise = (key) => new Promise((resolve,reject) => {
 
 export const clearPromise = (key) => new Promise((resolve,reject) => {
   resolve(window.localStorage.clear())
-  // storage.remove(key,(e) => {
-  //   console.log('clear promise ok')
-  //   if(e) reject(e)
-  //   else resolve()
-  // })
 })
 
 export const removePromise = (key,id) => new Promise((resolve,reject) => {

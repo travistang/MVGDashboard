@@ -55,7 +55,7 @@ export default class DestinationCard extends React.Component {
         return <LineTag backgroundColor={Utils.getColor(label)} line={label} />
       }
     })
-    .map(part => <div style={style.destinationCard.transportationList}> {part} </div>)
+    .map((part,i) => <div key={i} style={style.destinationCard.transportationList}> {part} </div>)
     // make the "intermediateComponent" (i.e. arrow) and part components go one after another
     let res = partComponents.reduce((list,part) => list.concat(part,intermediateComponent),[])
     res.pop() // why? because for the above lines one part label and one arrow is added for each part.
