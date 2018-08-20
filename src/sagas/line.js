@@ -26,7 +26,8 @@ export function* getLineInfo(action) {
       name: line,
       line: result
     })
-
+    console.log('get line result')
+    console.log(line,result)
   } catch(e) {
     // just for some logging purposes
     yield put({type: MVGAction.GET_LINE_FAILED,line: action.line,error: e})

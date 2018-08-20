@@ -129,8 +129,6 @@ function* onComputeLineSegment() {
   // reevaluate the connections
   // objects storing the way to go from one place to another, in different times, in different ways
   let connections = yield select(state => state.mvg.connections)
-  console.log('connections is now')
-  console.log(connections)
   // wait wait, this is also the line we're gonna display!
   // let cache = yield select(state => state.mvg.connectionLines)
   // this stores the list of stations

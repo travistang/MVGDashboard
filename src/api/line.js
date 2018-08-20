@@ -22,9 +22,8 @@ export default class {
   // this function reads from the cache, if theres nothing it wont try to fetch something new
   async getLineInfoEncode(line) {
     let encodeDict = await Store.getPromise(this.storeEncodeKey)
-    // don't have to check whether the object is empty or not,
-    // because even if it is the effect is Object.keys will return an empty array
-    return Object.keys(encodeDict).filter(key => encodeDict[key] == line)
+    let res = Object.keys(encodeDict).filter(key => encodeDict[key] == line)
+    if(res.length == 0) return null
   }
   // some scraping of the regional bus xhr...
   async fetchRegionalBusEncodings() {
