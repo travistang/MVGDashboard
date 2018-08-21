@@ -75,19 +75,41 @@ export default class DestinationList extends React.Component {
   getOpacityForLine(part) {
     // TODO: coorperate with station selection as well
     // return 1.
-    if(!this.state.selectedPart) return 1. // no specific connections are selected, just go for 1
-    return (this.state.selectedPart.label === part.label)?1.:0.5 // suppress non-selected part opacity when there are some other parts selected
+    if(!this.state.selectedPart && !this.state.selectedConnection)
+      return 1. // no specific connections are selected, just go for 1
+    if(!this.state.selectedConnection)
+      return (this.state.selectedPart.label === part.label)?1.:0.5 // suppress non-selected part opacity when there are some other parts selected
+
+    if(!this.state.selectedPart) {
+      // then its selectedConnection thats true...
+      if(this.state.selectedConnection.connectionPartList.find(
+        conn =>  conn.from.id === part.fromStationId
+          && conn.to.id   === part.toStationId
+      )) return 1.
+      return 0.5
+    }
   }
   /*
     Triggered when a part of the line is being pointed at
   */
   onLineMouseOver(part) {
-    console.log('on line mouse over',part)
     this.setState({...this.state,selectedPart: part})
   }
   clearLineHighlight() {
-    console.log('clear linehighlight')
     this.setState({...this.state,selectedPart: null})
+  }
+  highlightLinesToStation(dest) {
+    console.log('highlightLinesToStation')
+    let connections = this.getConnections(dest)
+    console.log(connections)
+    if(!connections || !connections[0]) return // cannot get connections :(
+    let connection = connections[0]
+
+    this.setState({...this.state,selectedConnection: connection})
+    console.log('highlighting connection',connection)
+  }
+  clearHighlightsToStation() {
+    this.setState({...this.state,selectedConnection: null})
   }
   // the "map" mode component
   // which displays the fastest route to the destination
@@ -122,6 +144,8 @@ export default class DestinationList extends React.Component {
           <Marker
             draggable={false}
             position={[dest.latitude,dest.longitude]}
+            onMouseOver={this.highlightLinesToStation.bind(this,dest)}
+            onMouseOut={this.clearHighlightsToStation.bind(this)}
           >
             <Tooltip permanent>
               <div style={style.tooltip.container}>
