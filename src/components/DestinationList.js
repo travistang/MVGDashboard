@@ -34,7 +34,8 @@ export default class DestinationList extends React.Component {
       currentPage: 1,
       isAddingNewDestination: false,
       isRemoving: false,
-
+      selectedConnection: null,
+      selectedPart: null,
       displayMode: this.displayMode.LIST,
     }
     // get destinations and they will be stored in the store
@@ -66,6 +67,27 @@ export default class DestinationList extends React.Component {
     let connections = this.getConnections(station)
     if(!connections || !connections[i]) return 'N/A'
     return Utils.timeDifferenceFormatString(connections[i].departure,connections[i].arrival)
+  }
+  /*
+    Given a part, compute its opacity,
+    this can be determined by which line the user is selecting
+  */
+  getOpacityForLine(part) {
+    // TODO: coorperate with station selection as well
+    // return 1.
+    if(!this.state.selectedPart) return 1. // no specific connections are selected, just go for 1
+    return (this.state.selectedPart.label === part.label)?1.:0.5 // suppress non-selected part opacity when there are some other parts selected
+  }
+  /*
+    Triggered when a part of the line is being pointed at
+  */
+  onLineMouseOver(part) {
+    console.log('on line mouse over',part)
+    this.setState({...this.state,selectedPart: part})
+  }
+  clearLineHighlight() {
+    console.log('clear linehighlight')
+    this.setState({...this.state,selectedPart: null})
   }
   // the "map" mode component
   // which displays the fastest route to the destination
@@ -135,7 +157,10 @@ export default class DestinationList extends React.Component {
           Object.values(this.props.connectionLines)
             .map(part => (
               <Polyline
+                opacity={this.getOpacityForLine(part)}
                 color={Utils.getColor(part.label)}
+                onMouseOver={this.onLineMouseOver.bind(this,part)}
+                onMouseOut={this.clearLineHighlight.bind(this)}
                 positions={part.coords}
               >
                 <Tooltip>
