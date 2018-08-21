@@ -12,7 +12,8 @@ import {
   FormGroup,
   InputGroup,
   Glyphicon,
-  ControlLabel
+  ControlLabel,
+  Label
 } from 'react-bootstrap'
 export default class DestinationCard extends React.Component {
   constructor(props) {
@@ -36,7 +37,7 @@ export default class DestinationCard extends React.Component {
   }
   // this is a "placeholder" for the connections when the requested one is not available
   getConnectionLoadingComponent() {
-    return (<h6> Fetching connections... </h6>)
+    return (<Label bsStyle="info"> Fetching connections... </Label>)
   }
   // get the n-th connection component, sorted by time of ARRIVAL
   getConnectionDisplayComponents(n){
@@ -52,7 +53,7 @@ export default class DestinationCard extends React.Component {
       if(part.connectionPartType == "FOOTWAY") return walkingComponent // sorry you have to walk...
       else { // i think this is a transportation, now lets look at the part..
         let label = part.label
-        return <LineTag backgroundColor={Utils.getColor(label)} line={label} />
+        return <LineTag key={part.label} backgroundColor={Utils.getColor(label)} line={label} />
       }
     })
     .map((part,i) => <div key={i} style={style.destinationCard.transportationList}> {part} </div>)
@@ -124,7 +125,7 @@ export default class DestinationCard extends React.Component {
     // component that renders travel time of this connection
     return (
 
-        <div style={style.destinationCard}>
+        <div style={style.destinationCard} onClick={this.props.onClick}>
           <div style={style.destinationCard.upperRow}>
             <div style={style.destinationCard.upperRow.left}>
               {!this.props.isRemoving && <h6>to</h6>} <h4 style={style.destinationCard.upperRow.left.name}> {this.props.station.name} </h4>

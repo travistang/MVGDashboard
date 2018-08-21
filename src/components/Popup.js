@@ -6,6 +6,9 @@ import {
   FormGroup,
   InputGroup,
   ControlLabel,
+  Container,
+  Row,Col,
+  Label,
 } from 'react-bootstrap'
 import {
   Map,
@@ -63,13 +66,13 @@ export default class Popup extends React.Component {
         />
         {
           this.state.displayMarker.map(station => (
-            <Marker
+            <Marker key={station.id}
               onClick={() => this.onStationChosen(station)}
 
               position={this.getStationLocation(station)}
             >
               <Tooltip permanent>
-                <div >
+                <div>
                   {Utils.getStationOverviewComponent(station)}
                 </div>
 
@@ -86,7 +89,63 @@ export default class Popup extends React.Component {
       mapCenter: inputFieldState.suggestions.length && this.getStationLocation(inputFieldState.suggestions[0])
     })
   }
+  // function that evaluates the distances between closest stations and the given station
+  getStationDistanceToLocation(dest) { return 10. } // just a placeholder
+  // main component for rendering the details to a destination
+  destinationDetailComponent() {
+    let dest = this.props.destinationDetail // as an alias
+    let connections = this.props.connections[dest.id] // may or may not be null!
+    // all other utils goes here, don't disturb whats outside...
+    // all of them should be FUNCTIONS! Why? because if connections is null and the reference is used directly,
+    // then it definitely throws something here...
+    return (
+      <Modal show={true} bsSize="large" onHide={this.props.onHide}>
+        <Modal.Header closeButton>
+          Connections to {dest.name}
+        </Modal.Header>
+        {
+          connections?(
+            <Modal.Body>
+              <div style={{display: 'flex',flexDirection: 'column'}}>
+                {/* First row is for station details, and time for earliest arrival*/}
+                <div style={{flex: 1,display:'flex'}}>
+                  {/* Basic info of the station, like name, latlng, product names...*/}
+                  <div style={{flex: 1}}> {/* First Column*/}
+                    {/* Name of station*/}
+                    <div>
+                      <h3>{dest.name}</h3> <Label bsStyle="info"> {this.getStationDistanceToLocation(dest)} km away </Label>
+                    </div>
+                    <div style={{flex: 1,display: 'flex',flexWrap: 'wrap'}}>
+                      {Utils.getStationProductLineTags(dest)}
+                    </div>
+                  </div>
+                  <div style={{flex: 1}}>
+                  </div>
+                </div>
+                {/* Second row is for list of possible connections and map*/}
+                <div>
+                  <div>
+                    {/* List of connections*/}
+                  </div>
+                  <div>
+                    {/* Map */}
+                  </div>
+                </div>
+              </div>
+            </Modal.Body>
+          ):
+          ( // no connection here
+            <Label> Failed to fetch connection...</Label>
+          )
+        }
+
+      </Modal>
+    )
+  }
   render() {
+    if(this.props.destinationDetail)
+      return this.destinationDetailComponent()
+    else
     return (
       <Modal show={true} bsSize="large" onHide={this.props.onHide}>
         <Modal.Header closeButton>

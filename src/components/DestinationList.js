@@ -99,14 +99,11 @@ export default class DestinationList extends React.Component {
     this.setState({...this.state,selectedPart: null})
   }
   highlightLinesToStation(dest) {
-    console.log('highlightLinesToStation')
     let connections = this.getConnections(dest)
-    console.log(connections)
     if(!connections || !connections[0]) return // cannot get connections :(
     let connection = connections[0]
 
     this.setState({...this.state,selectedConnection: connection})
-    console.log('highlighting connection',connection)
   }
   clearHighlightsToStation() {
     this.setState({...this.state,selectedConnection: null})
@@ -146,6 +143,7 @@ export default class DestinationList extends React.Component {
             position={[dest.latitude,dest.longitude]}
             onMouseOver={this.highlightLinesToStation.bind(this,dest)}
             onMouseOut={this.clearHighlightsToStation.bind(this)}
+            onClick={this.props.showDestinationDetail.bind(this,dest)}
           >
             <Tooltip permanent>
               <div style={style.tooltip.container}>
@@ -290,7 +288,15 @@ export default class DestinationList extends React.Component {
     return (
       <div style={style.destinationList.destinationContainer}>
         {this.props.destinations
-          .map(dest => <DestinationCard onRemove={() => this.props.removeDestination(dest.id)} isRemoving={this.state.isRemoving} station={dest} />)
+          .map(dest => (
+            <DestinationCard
+              key={dest.id}
+              onClick={this.props.showDestinationDetail.bind(this,dest)}
+              onRemove={() => this.props.removeDestination(dest.id)}
+              isRemoving={this.state.isRemoving}
+              station={dest}
+            />
+          ))
           // lol!
           .concat(this.state.isAddingNewDestination?this.editComponent():null)
           .concat(this.state.isRemoving?null:this.addNewDestinationButton())

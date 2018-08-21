@@ -51,8 +51,6 @@ export function* getLineInfo(action) {
 // handles connection info on each
 export function* getLineInfoOnGetConnectionSuccess(action) {
   let connections = action.connections
-  console.log('connections')
-  console.log(connections)
   if(!connections) {
     return
   }

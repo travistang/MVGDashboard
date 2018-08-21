@@ -15,7 +15,7 @@ import {
   Modal
 } from 'react-bootstrap'
 import style from './Style.js';
-import SelectLocationPopup from '../containers/Popup'
+import DetailsPopup from '../containers/Popup'
 import ImageWithText from './ImageWithText'
 import InformationOverlay from './InformationOverlay'
 import StationCard from './StationCard'
@@ -84,7 +84,16 @@ export default class Home extends Component<Props> {
             <NavItem eventKey={1} href="#">
               {this.props.currentTime.toLocaleString()}
             </NavItem>
+            {
+              this.props.error && (
+                <NavItem disabled>
+                  <Label bsStyle="success">Error: {this.props.error.toString()}</Label>
+                </NavItem>
+              )
+            }
           </Nav>
+
+
         </Navbar.Collapse>
 
       </Navbar>)
@@ -148,6 +157,8 @@ export default class Home extends Component<Props> {
   }
   hidePopup() {
     this.setState({...this.state,showPopup: false})
+    // clear the destination detail so that the popup will close
+    this.props.clearDestinationDetail()
   }
   leftContainer() {
     if(this.props.closest_stations.length == 0) return null
@@ -234,15 +245,16 @@ export default class Home extends Component<Props> {
   }
   popup() {
     return (
-      <SelectLocationPopup onHide={this.hidePopup.bind(this)} />
+      <DetailsPopup onHide={this.hidePopup.bind(this)} />
     )
   }
   render() {
     return (
       <div style={style.app}>
-        {(!this.isStationLoaded() || this.props.error) && this.loadingOverlay()}
+        {(!this.isStationLoaded()) && this.loadingOverlay()}
         {this.navBar()}
-        {this.state.showPopup && this.popup()}
+        {/* Some more usage of the popup: show destination details...*/}
+        {(this.state.showPopup || this.props.destinationDetail) && this.popup()}
         <div style={style.mainContainer}>
           {this.leftContainer()}
           {this.rightContainer()}

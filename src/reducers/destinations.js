@@ -2,6 +2,7 @@ import * as DestinationAction from '../actions/destination'
 import {getPromise,setPromise} from '../api/destination'
 const defaultState = {
   destinations: [],
+  destinationDetail: null,
   error: null,
 }
 
@@ -13,6 +14,10 @@ export default function destination(state = defaultState,action) {
       return {...state,destinations: action.destinations}
     case DestinationAction.CLEAR_DESTINATION_SUCCESS:
       return {...state,destinations: []}
+      
+    case DestinationAction.SHOW_DESTINATION_DETAIL:
+      return {...state,destinationDetail: action.destination}
+
     case DestinationAction.ADD_DESTINATION_FAILED:
     case DestinationAction.GET_DESTINATION_FAILED:
     case DestinationAction.CLEAR_DESTINATION_FAILED:
