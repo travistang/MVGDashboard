@@ -1,6 +1,19 @@
 import React from 'react'
 import LineTag from '../components/LineTag'
 import style from '../components/Style'
+import {
+  Glyphicon
+} from 'react-bootstrap'
+import {
+  TileLayer
+} from 'react-leaflet'
+export const getMapTileLayer = () => {
+  return (
+    <TileLayer
+      url='https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+    />
+  )
+}
 export const getStationName = (station) => {
   let {name,place} = station
   if(!name || ! place) return ""
@@ -46,6 +59,8 @@ export const getProductColorCode = (product) => {
   for buses, trams and the rest they usually use a unified color.
 */
 export const getColor = (line) => {
+
+  if(!line) return '#eeeeee' // a gray line
   if(line.indexOf('-') > 0) {
     // SEV cases..
     line = line.split('-')[0]
@@ -115,7 +130,24 @@ export const getProductShortName = (product) => {
       return product[0]
   }
 }
-
+export const getConnectionDisplayComponents = (connection) => {
+  let intermediateComponent = <Glyphicon glyph="arrow-right" />
+  let walkingComponent = <Glyphicon glyph="piggy-bank" /> // i found no pedestrian icon, just a pig there:)
+  // get the "connection parts" of this connection, convert them to components
+  let partComponents = connection.connectionPartList.map(part => {
+    if(part.connectionPartType == "FOOTWAY") return walkingComponent // sorry you have to walk...
+    else { // i think this is a transportation, now lets look at the part..
+      let label = part.label
+      return <LineTag key={part.label} backgroundColor={getColor(label)} line={label} />
+    }
+  })
+  .map((part,i) => <div key={i} style={style.destinationCard.transportationList}> {part} </div>)
+  // make the "intermediateComponent" (i.e. arrow) and part components go one after another
+  let res = partComponents.reduce((list,part) => list.concat(part,intermediateComponent),[])
+  res.pop() // why? because for the above lines one part label and one arrow is added for each part.
+  // But I dont want the last arrow to be there, thats why I pop..
+  return res
+}
 export const getStationProductLineTags = (station) => {
   return station.products.map(p => <LineTag line={getProductShortName(p)} backgroundColor={getProductColorCode(p)} />)
 }
@@ -148,9 +180,9 @@ export const timeDifferenceToDateString = (timeA,timeB) => {
     hh,mm,ss,hasPassed
   }
 }
-export const timeDifferenceFormatString = (timeA,timeB) => {
+export const timeDifferenceFormatString = (timeA,timeB,withSign = false) => {
   let {hh,mm,ss,hasPassed} = timeDifferenceToDateString(timeA,timeB)
-  let res = hasPassed?"-":"" // if time diff is negative, add a "-" in front
+  let res = hasPassed?"-":(withSign?"+":"") // if time diff is negative, add a "-" in front
   if(hh == 0 && mm <= 1) return `< ${res}1min`
   if(hh > 0) return (`${res}${hh}:${mm}h`)
   return `${res}${mm}min`
@@ -180,13 +212,24 @@ export const convertMVVStationToMVGStation = (mvvStation,mvgStationList) => {
 }
 
 
-
+export const splitConnectionPartCacheLabel = (lbl) => {
+  let parts = lbl.split('-')
+  return {
+    from: parseInt(parts[0]),
+    to: parseInt(parts[1]),
+    line: parts[2],
+    label:lbl,
+  }
+}
 export const getConnectionPartCacheLabel = (part) => {
-  if(!part || !part.label) return null // cannot compute...
+
+  if(!part) return null // cannot compute...
   let fromStationId = part.from.id,
-      toStationId   = part.to.id,
-      cacheLabel = `${fromStationId}-${toStationId}-${part.label.split('-')[0]}` // for dealing with the SEV case...
-  return cacheLabel
+      toStationId   = part.to.id
+  if(part.connectionPartType == "FOOTWAY")
+    return `${fromStationId}-${toStationId}-FOOTWAY`
+
+  return `${fromStationId}-${toStationId}-${part.label.split('-')[0]}` // for dealing with the SEV case...
 }
 
 export const getStationLatLng = (station) => {

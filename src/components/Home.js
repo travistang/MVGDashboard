@@ -139,6 +139,7 @@ export default class Home extends Component<Props> {
         />
         {this.props.closest_stations.map(s => (
           <Marker
+            key={s.name}
             opacity={0.7}
             draggable={false}
             position={[s.latitude,s.longitude]}

@@ -162,7 +162,7 @@ export default class {
       let {coords,mvvStationParts} = this.computeLineSegment(
           part.from.id,
           part.to.id,
-          part.label,        // use the de-SEV labels to compute Line segments
+          partLabel,        // use the de-SEV labels to compute Line segments
           lines,stations)
       if(!coords) coords = [[part.from.latitude,part.from.longitude],[part.to.latitude,part.to.longitude]]
       let fromStationId = part.from.id,
@@ -220,8 +220,10 @@ export default class {
   }
   // given a connection (from station to station),lines (containing stations of all lines), and the cache (from state)
   // give a computed new line segments
-  computeLineSegment(fromStationId,toStationId,label,lines,stations) {
+  computeLineSegment(fromStationId,toStationId,lineLabel,lines,stations) {
     let isSEV = false
+    let parts = Utils.splitConnectionPartCacheLabel(lineLabel)
+    let label = parts.line
     if(label.indexOf('-') > -1) {
       label = label.split('-')[0]
       isSEV = true

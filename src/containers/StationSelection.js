@@ -1,4 +1,3 @@
-import React from 'react'
 import StationSelection from '../components/StationSelection'
 import {connect} from 'react-redux'
 import * as LocationAction from '../actions/location'

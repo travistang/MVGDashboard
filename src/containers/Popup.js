@@ -1,4 +1,3 @@
-import React from 'react'
 import { connect } from 'react-redux';
 import Popup from '../components/Popup'
 import * as LocationAction from '../actions/location'
@@ -9,6 +8,7 @@ function mapStateToProps(state) {
     closestStations: state.mvg.closest_stations,
     stations: state.mvg.stations,
     connections: state.mvg.connections,
+    connectionLines: state.mvg.connectionLines,
     destinationDetail: state.destination.destinationDetail
   }
 }

@@ -1,5 +1,5 @@
 // @flow
-import React, { Component } from 'react';
+
 import Home from '../components/Home';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

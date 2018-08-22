@@ -46,22 +46,8 @@ export default class DestinationCard extends React.Component {
 
     let connection = connections[n]
 
-    let intermediateComponent = <Glyphicon glyph="arrow-right" />
-    let walkingComponent = <Glyphicon glyph="piggy-bank" /> // i found no pedestrian icon, just a pig there:)
-    // get the "connection parts" of this connection, convert them to components
-    let partComponents = connection.connectionPartList.map(part => {
-      if(part.connectionPartType == "FOOTWAY") return walkingComponent // sorry you have to walk...
-      else { // i think this is a transportation, now lets look at the part..
-        let label = part.label
-        return <LineTag key={part.label} backgroundColor={Utils.getColor(label)} line={label} />
-      }
-    })
-    .map((part,i) => <div key={i} style={style.destinationCard.transportationList}> {part} </div>)
-    // make the "intermediateComponent" (i.e. arrow) and part components go one after another
-    let res = partComponents.reduce((list,part) => list.concat(part,intermediateComponent),[])
-    res.pop() // why? because for the above lines one part label and one arrow is added for each part.
-    // But I dont want the last arrow to be there, thats why I pop..
-    return res
+    return Utils.getConnectionDisplayComponents(connection)
+
   }
   // if theres a connection for this dest,
   // return something like u1 -> s3 -> ...
