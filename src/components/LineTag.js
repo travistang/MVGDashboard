@@ -9,17 +9,3 @@ export default function LineTag(props) {
     </div>
   )
 }
-// export default class LineTag extends React.Component {
-//   render() {
-//     return (
-//       <div style={{...style.lineTag,...this.props}}>
-//         {this.props.line}
-//       </div>
-//     )
-//   }
-// }
-//
-// LineTag.propTypes = {
-//   backgroundColor: PropTypes.string.isRequired,
-//   line: PropTypes.string.isRequired
-// }

@@ -20,6 +20,7 @@ import {
   Popup as MapPopup
 } from 'react-leaflet'
 import style from './Style'
+import ConnectionLine from './ConnectionLine'
 import StationSelection from '../containers/StationSelection'
 import API from '../api'
 import * as Utils from '../utils/utils'
@@ -155,31 +156,9 @@ export default class Popup extends React.Component {
   }
   // main component for rendering the details to a destination
   destinationDetailComponent() {
-    console.log('connectionINde',this.state.connectionIndex)
     let dest = this.props.destinationDetail // as an alias
     let connections = this.props.connections[dest.id] // may or may not be null!
-    let activeConnection = connections && connections[this.state.connectionIndex]
-    let connectionLines = activeConnection && (() => {
-      let fromStationId = activeConnection.from.id,
-          toStationId   = activeConnection.to.id,
-        // principle is, if the destination is unique,
-        // there should be exactly one result when looking for keys in connectionLInes
-        labels = Object.keys(this.props.connectionLines).map(Utils.splitConnectionPartCacheLabel),
-        relevantLabels = [],
-        curLabel = labels.find(l => l.to == toStationId)
-      if(!curLabel) return []
-      console.log('from',fromStationId,'toSTationId',toStationId,'labels',labels)
-      do {
-          relevantLabels.push(curLabel.label)
-          // move one up...
-          curLabel = labels.find(l => l.to == curLabel.from) // traceback once...
-      }while(curLabel && curLabel.to !== fromStationId)
-        return relevantLabels
-    })() //
-    // all other utils goes here, don't disturb whats outside...
-    // all of them should be FUNCTIONS! Why? because if connections is null and the reference is used directly,
-    // then it definitely throws something here...
-    console.log('connection lines computed',connectionLines)
+
     let ConnectionOverviewComponent = (props) => (
       <div style={{...props.style,display: 'flex'}} onClick={props.onClick}>
         {/* First column*/}
@@ -187,7 +166,7 @@ export default class Popup extends React.Component {
           {Utils.unixTimeStampToDateHHMM(props.connection.departure)}
         </div>
         {/* Second column */}
-        <div style={{flex: 2, display: 'flex',alignItems: 'center'}}>
+        <div style={{flex: 2, display: 'flex',alignItems: 'center',flexWrap: 'wrap'}}>
           {Utils.getConnectionDisplayComponents(props.connection)}
         </div>
       </div>
@@ -206,22 +185,26 @@ export default class Popup extends React.Component {
                   {/* Basic info of the station, like name, latlng, product names...*/}
                   <div style={{flex: 1}}> {/* First Column*/}
                     {/* Name of station*/}
-                    <div style={{flex: 1,display: 'block'}}>
+                    <div style={{flex: 1,display: 'block', flexWrap: 'wrap'}}>
                       <h2 style={{marginTop: 0}}>{dest.name} </h2>
-                      <Label size="small" bsStyle="info"> {this.getStationDistanceToLocation(dest)} km away </Label>
                     </div>
+                    {/* Auxillary info */}
                     <div style={{flex: 1,display: 'flex',flexWrap: 'wrap'}}>
+                      <div>
+                        <span className="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                        {this.getStationDistanceToLocation(dest)}km |
+                      </div>
                       {Utils.getStationProductLineTags(dest)}
                     </div>
                   </div>
-                  <div style={{flex: 1}}>
+                  <div style={{flex: 1}}> {/* Second Column */}
                   {/* Get the fastest connection in this part*/}
                     {this.getConnectionAttributeComponent(connections[this.state.connectionIndex],connections[0],this.state.connectionIndex == 0)}
                   </div>
                 </div>
                 {/* Second row is for list of possible connections and map*/}
                 <div style={{flex: 1,display:'flex'}}>
-                  <div style={{flex:1}} >
+                  <div style={{flex:2}} >
                     {/* List of connections*/}
                     {
                       connections.map((conn,i) => (
@@ -232,34 +215,8 @@ export default class Popup extends React.Component {
                       ))
                     }
                   </div>
-                  <div style={{flex: 2}}>
-                    {/* Map */}
-                    <Map
-                      zoom={11}
-                      center={Utils.getStationLatLng(activeConnection.to)}
-                      style={{height: '100%',width: '100%'}}
-                      zoomControl={false}
-                    >
-                      {Utils.getMapTileLayer()}
-                      {/* From and to marker*/}
-                      {
-                        [activeConnection.from,activeConnection.to].map(station => (
-                          <Marker key={station.id} position={Utils.getStationLatLng(station)}>
-                            <Tooltip permanent>
-                              {station.name}
-                            </Tooltip>
-                            {
-                              connectionLines.map(line => (
-                                <Polyline
-                                  color={Utils.getColor(this.props.connectionLines[line].label)}
-                                  positions={this.props.connectionLines[line].coords}
-                                />
-                              ))
-                            }
-                          </Marker>
-                        ))
-                      }
-                    </Map>
+                  <div style={{flex: 3}}>
+                      <ConnectionLine connection={connections[this.state.connectionIndex]} />
                   </div>
                 </div>
               </div>

@@ -154,7 +154,8 @@ export default class {
     as well as the list of stations ( :( )
     compute the list of coordinates for the line, as well as the
   */
-  getLineForConnection(partList,lines,stations) { if(!partList || !lines || ! stations) return {}
+  getLineForConnection(partList,lines,stations) {
+    if(!partList || !lines || ! stations) return {}
     return Object.assign(...partList.map(part => {
       // this handles the SEVs, from S1-3a to S1...
       let partLabel = Utils.getConnectionPartCacheLabel(part)
