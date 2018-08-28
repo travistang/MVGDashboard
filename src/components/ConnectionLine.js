@@ -166,7 +166,7 @@ export default class ConnectionLine extends React.Component {
                   - The last would be the info and arrival time of the last stop.
                 */
                 let color = Utils.getColor(part.label),
-                lineTag = <LineTag backgroundColor={color} line={part.label} />,
+                lineTag = part.label?(<LineTag backgroundColor={color} line={part.label} />): null, // no line tag if not needed
                 timeWithStationNameStyle = {
                   flex: `0 0 ${this.stationPointWidth}px`,
                   display: 'flex',
@@ -211,7 +211,13 @@ export default class ConnectionLine extends React.Component {
                   </div>,
 
                   <div style={lineNameDirectionStyle}>
-                    {lineTag} {part.destination}
+                    {lineTag || <span className="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span>}
+                    {part.destination || "Walking"}
+                    {/*
+                        Well, when the line tag cannot be constructed it is quite certain that this part is a walking component
+                        so the travel time is added to tell you how much time you need to walk...
+                    */}
+                    {!lineTag && <div className="text-info">({Utils.timeDifferenceFormatString(part.departure,part.arrival)})</div>}
                   </div>
                 ]
 
