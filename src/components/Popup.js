@@ -22,6 +22,7 @@ import {
 import style from './Style'
 import ConnectionLine from './ConnectionLine'
 import StationSelection from '../containers/StationSelection'
+import InformationOverlay from './InformationOverlay'
 import API from '../api'
 import * as Utils from '../utils/utils'
 export default class Popup extends React.Component {
@@ -203,7 +204,7 @@ export default class Popup extends React.Component {
                   </div>
                 </div>
                 {/* Second row is for list of possible connections and map*/}
-                <div style={{flex: 1,display:'flex'}}>
+                <div style={{flex: 1,display:'flex',minHeight: '50vh'}}>
                   <div style={{flex:2}} >
                     {/* List of connections*/}
                     {
@@ -224,7 +225,8 @@ export default class Popup extends React.Component {
           ):
           ( // no connection here
             // TODO: prettify this
-            <Label> Failed to fetch connection...</Label>
+            <InformationOverlay title="Fail to fetch connection..." />
+            // <Label> Failed to fetch connection...</Label>
           )
         }
 

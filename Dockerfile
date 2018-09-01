@@ -1,4 +1,4 @@
-from node:latest
+from hypriot/rpi-node:latest
 
 workdir /app
 add . /app
