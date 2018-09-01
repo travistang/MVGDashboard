@@ -231,7 +231,7 @@ export default class DestinationList extends React.Component {
     }
     return (
       <div style={style.destinationList.header}>
-        <h2> Time to Destination </h2>
+        <h2> Destinations </h2>
         <ButtonGroup>
           {buttons}
         </ButtonGroup>
@@ -334,7 +334,7 @@ export default class DestinationList extends React.Component {
       case this.displayMode.LIST:
         return [
           this.destinationComponents(),
-          this.props.destinations.length && this.paginationComponent()
+          (this.props.destinations.length && this.paginationComponent()) || null
         ]
       case this.displayMode.MAP:
         return this.getMap()

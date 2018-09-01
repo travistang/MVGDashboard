@@ -98,7 +98,7 @@ export default {
       display: "flex",
       flex: "0 0 10%",
       justifyContent: "space-between",
-      alignItems: "flex-end",
+      alignItems: "center",
 
     },
     destinationContainer: {
@@ -361,6 +361,8 @@ export default {
         alignText: 'center',
         width: "100%",
         marginBottom: "16px",
+        alignItems: 'center',
+        display: 'flex',
       },
       middleContainer: {
         flex: "4",

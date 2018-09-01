@@ -12,6 +12,7 @@ import {
   Well,
   FormGroup,
   ControlLabel,
+  Glyphicon,
   Modal
 } from 'react-bootstrap'
 import style from './Style.js';
@@ -22,6 +23,7 @@ import StationCard from './StationCard'
 import DepartureCard from '../containers/DepartureCard'
 import StationSelection from './StationSelection'
 import DestinationList from '../containers/DestinationList'
+import {DepartureListHeader} from '../components/DepartureCard'
 import * as Utils from '../utils/utils'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet'
 type Props = {};
@@ -44,24 +46,20 @@ export default class Home extends Component<Props> {
   }
   getNextRefreshComponent() {
     let nextRefreshTime = this.getNextRefreshTime()
+    let content
+
     if(!this.props.shouldUpdate)
-      return (
-        <NavItem disabled>
-          Refresh Paused ({this.getNextRefreshTime()})
-        </NavItem>
-      )
-    if(nextRefreshTime == 0)
-      return (
-        <NavItem disabled>
-            <Label bsStyle="success">Refreshing...</Label>
-        </NavItem>
-      )
+      content = `Refresh Paused (${this.getNextRefreshTime()})`
+    else if(nextRefreshTime == 0)
+      content = (<Label bsStyle="success">Refreshing...</Label>)
     else
-      return (
-        <NavItem disabled>
-          Next refresh in : {this.getNextRefreshTime()} second(s)
-        </NavItem>
-      )
+      content = `Next refresh in : ${this.getNextRefreshTime()} second(s)`
+
+    return (
+      <NavItem onClick={this.props.toggleUpdate}>
+        {content}
+      </NavItem>
+    )
   }
   navBar() {
     return (
@@ -76,14 +74,14 @@ export default class Home extends Component<Props> {
           {
             this.isStationLoaded() && this.getNextRefreshComponent()
           }
+          {/*
             <NavItem onClick={this.props.toggleUpdate}>
               {this.props.shouldUpdate?"Stop update":"Resume update"}
             </NavItem>
+          */}
+
           </Nav>
           <Nav pullRight>
-            <NavItem eventKey={1} href="#">
-              {this.props.currentTime.toLocaleString()}
-            </NavItem>
             {
               this.props.error && (
                 <NavItem disabled>
@@ -91,6 +89,13 @@ export default class Home extends Component<Props> {
                 </NavItem>
               )
             }
+            <NavItem onClick={this.selectLocation.bind(this)}>
+              <span className="glyphicon glyphicon-map-marker" />
+            </NavItem>
+            <NavItem eventKey={1} href="#">
+              {this.props.currentTime.toLocaleString()}
+            </NavItem>
+
           </Nav>
 
 
@@ -168,18 +173,21 @@ export default class Home extends Component<Props> {
     if (!this.props.isChangingLocation)
     return (
       <div style={style.mainContainer.leftContainer}>
-        <div style={style.mainContainer.leftContainer.topContainer}>
+        {/*
+          <div style={style.mainContainer.leftContainer.topContainer}>
           <div
             onClick={this.selectLocation.bind(this)}
             style={style.mainContainer.leftContainer.topContainer.overlay}
           >
             <h6> You are around </h6>
-            <h1> {Utils.getStationName(closestStation)}
-            </h1>
-            <div style={style.tokenList}> {Utils.getStationProductLineTags(closestStation)} </div>
+            <h2>
+              {Utils.getStationName(closestStation)}
+            </h2>
+
           </div>
 
         </div>
+        */}
 
         <DestinationList />
 
@@ -234,6 +242,7 @@ export default class Home extends Component<Props> {
         <div style={style.mainContainer.rightContainer.topContainer}>
             <h2>Departures</h2>
         </div>
+
         <div style={style.mainContainer.rightContainer.middleContainer}>
           {this.departureList()}
         </div>

@@ -62,8 +62,30 @@ export default class DepartureCard extends React.Component {
   }
 }
 
+export class DepartureListHeader extends React.Component {
+  render() {
+    return (
+      <div style={{...style.departureCard,width: '100%'}}>
+        <div style={{...style.departureCard.leftColumn,display: 'flex', alignItems: 'center',justifyContent: 'center'}}>
+          Time Left
+        </div>
+
+        <div style={{...style.departureCard.middleColumn,display: 'flex', alignItems: 'center',justifyContent: 'center'}}>
+          Departure
+        </div>
+
+        <div style={style.departureCard.rightColumn}>
+          <div style={{...style.departureCard.rightColumn.upperRow,display: 'flex', alignItems: 'center',justifyContent: 'center'}}>
+            Time
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
 DepartureCard.propTypes = {
   departure: PropTypes.object.isRequired,
   currentTime: PropTypes.object.isRequired,
   closestStations: PropTypes.object.isRequired,
+
 }
