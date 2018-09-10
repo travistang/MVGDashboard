@@ -30,7 +30,7 @@ export default class DestinationList extends React.Component {
       MAP: 2,
     }
     this.state = {
-      numDestinationShown: 2,
+      numDestinationShown: 3,
       currentPage: 1,
       isAddingNewDestination: false,
       isRemoving: false,
@@ -41,6 +41,13 @@ export default class DestinationList extends React.Component {
     // get destinations and they will be stored in the store
     this.props.getDestinations()
 
+  }
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.destinations.length == 0 && this.state.isRemoving) {
+      // "remove all" button is pressed
+      // bounce back to non-removing mode
+      this.setState({...this.state,isRemoving: false,currentPage: 1})
+    }
   }
   getConnections(station) {
     let id = station.id
@@ -232,9 +239,15 @@ export default class DestinationList extends React.Component {
     return (
       <div style={style.destinationList.header}>
         <h2> Destinations </h2>
-        <ButtonGroup>
-          {buttons}
-        </ButtonGroup>
+        {
+          this.props.destinations.length > 0 &&
+          (
+            <ButtonGroup>
+              {buttons}
+            </ButtonGroup>
+          )
+        }
+
       </div>
     )
   }
@@ -291,6 +304,7 @@ export default class DestinationList extends React.Component {
           .map(dest => (
             <DestinationCard
               key={dest.id}
+              isEditing={false}
               onClick={this.props.showDestinationDetail.bind(this,dest)}
               onRemove={() => this.props.removeDestination(dest)}
               isRemoving={this.state.isRemoving}

@@ -11,7 +11,8 @@ const destinationStorageFieldKey = "destinations"
 
 export function* clearDestination() {
   try {
-    yield call(clearPromise,destinationStorageFieldKey)
+    yield call(clearDestinations)
+    // yield call(clearPromise,destinationStorageFieldKey)
     yield put({type: DestinationAction.CLEAR_DESTINATION_SUCCESS})
   }catch(e) {
     yield put({type:DestinationAction.CLEAR_DESTINATION_FAILED,error:e})
@@ -22,7 +23,7 @@ export function* storeDestination(action) {
   let station = action.station
   try {
     let result = yield call(addDestinations,station)
-    yield put({type: DestinationAction.ADD_DESTINATION_SUCCESS,station})
+    yield put({type: DestinationAction.ADD_DESTINATION_SUCCESS,station: result})
   } catch(e) {
     yield put({type: DestinationAction.ADD_DESTINATION_FAILED,error:e})
   }
