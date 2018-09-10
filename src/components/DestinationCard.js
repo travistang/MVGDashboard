@@ -13,6 +13,7 @@ import {
   InputGroup,
   Glyphicon,
   ControlLabel,
+  Col,
   Label
 } from 'react-bootstrap'
 export default class DestinationCard extends React.Component {
@@ -92,20 +93,21 @@ export default class DestinationCard extends React.Component {
 
     return (
       <Well bsSize="large">
-        <Form inline>
+        <Form horizontal>
           <FormGroup>
-            <ControlLabel>
-              Station Name:
-            </ControlLabel>{' '}
-            <StationSelection onSelect={this.props.onSelect} />
-          </FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>
+              Station:
+            </Col>
+            <Col sm={10}>
+              <StationSelection onSelect={this.props.onSelect} />
+            </Col>
 
-        </Form>
-        <div style={{paddingTop: 16}}>
-          <Button pullRight onClick={this.props.onCancel}>
-            <Glyphicon glyph="remove" />
+          </FormGroup>{' '}
+          <Button block type="submit" onClick={this.props.onCancel}>
+            Cancel
           </Button>
-        </div>
+        </Form>
+
       </Well>
     )
     // component that renders travel time of this connection

@@ -89,7 +89,8 @@ export default class Home extends Component<Props> {
                 </NavItem>
               )
             }
-            <NavItem onClick={this.selectLocation.bind(this)}>
+            <NavItem onClick={this.selectLocation.bind(this)} style={style.navBar.location}>
+              {(this.props.closest_stations.length && this.props.closest_stations[0].name) || null}
               <span className="glyphicon glyphicon-map-marker" />
             </NavItem>
             <NavItem eventKey={1} href="#">

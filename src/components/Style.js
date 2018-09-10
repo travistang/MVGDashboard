@@ -116,6 +116,11 @@ export default {
     transportationList: {
       margin: 8,
     },
+    edit: {
+      button: {
+        padding: 4
+      }
+    },
     upperRow: {
       display: "flex",
       alignItems: "center",
@@ -125,6 +130,8 @@ export default {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        marginTop: 8,
+        marginBottom: 8
       },
       left: {
         flex: 3,
@@ -158,7 +165,7 @@ export default {
         position: 'relative',
       },
       input: {
-        width: 240,
+        width: '100%',
         height: "80%",
         padding: '10px 20px',
         fontWeight: 300,
@@ -184,7 +191,7 @@ export default {
         zIndex: 1000,
         position: 'absolute',
         top: 40,
-        width: 280,
+        width: '100%',
         border: '1px solid #aaa',
         backgroundColor: '#fff',
         color: '#222',
@@ -304,7 +311,13 @@ export default {
 
     }
   },
-
+  navBar: {
+    location: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
   mainContainer: {
     flex: 1,
     position: "absolute",
