@@ -111,7 +111,7 @@ export default class DestinationCard extends React.Component {
     // component that renders travel time of this connection
     return (
 
-        <div style={style.destinationCard} onClick={this.props.onClick}>
+        <div style={style.destinationCard} onClick={!this.props.isRemoving && this.props.onClick}>
           <div style={style.destinationCard.upperRow}>
             <div style={style.destinationCard.upperRow.left}>
               {!this.props.isRemoving && <h6>to</h6>} <h4 style={style.destinationCard.upperRow.left.name}> {this.props.station.name} </h4>

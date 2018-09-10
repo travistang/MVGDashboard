@@ -292,7 +292,7 @@ export default class DestinationList extends React.Component {
             <DestinationCard
               key={dest.id}
               onClick={this.props.showDestinationDetail.bind(this,dest)}
-              onRemove={() => this.props.removeDestination(dest.id)}
+              onRemove={() => this.props.removeDestination(dest)}
               isRemoving={this.state.isRemoving}
               station={dest}
             />

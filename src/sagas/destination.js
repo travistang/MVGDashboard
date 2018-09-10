@@ -4,7 +4,7 @@ import { take,put,call,select } from "redux-saga/effects"
 import * as MVGAction from '../actions/mvg'
 import * as DestinationAction from '../actions/destination'
 import {getPromise,setPromise,clearPromise,removePromise} from '../api/destination'
-
+import {getDestinations,addDestinations,removeDestinations} from '../api/destination'
 import Api from '../api'
 
 const destinationStorageFieldKey = "destinations"
@@ -18,17 +18,18 @@ export function* clearDestination() {
   }
 }
 
-// somehow, the re
 export function* storeDestination(action) {
   let station = action.station
   try {
-    let destinations = yield call(getPromise,destinationStorageFieldKey)
-    if(Object.keys(destinations).length == 0) {
-      // no destination added
-      destinations = []
-    }
-    destinations.push(station)
-    let {key,data} = yield call(setPromise,destinationStorageFieldKey,destinations)
+    let result = yield call(addDestinations,station)
+    // let destinations = yield call(getDestination) // the generator above
+    // // let destinations = yield call(getPromise,destinationStorageFieldKey)
+    // // if(Object.keys(destinations).length == 0) {
+    // //   // no destination added
+    // //   destinations = []
+    // // }
+    // destinations.push(station)
+    // let {key,data} = yield call(setPromise,destinationStorageFieldKey,destinations)
     yield put({type: DestinationAction.ADD_DESTINATION_SUCCESS,station})
   } catch(e) {
     yield put({type: DestinationAction.ADD_DESTINATION_FAILED,error:e})
@@ -39,8 +40,9 @@ export function* storeDestination(action) {
 
 export function* getDestination() {
   try {
-    let destinations = yield call(getPromise,destinationStorageFieldKey)
-    if(Object.keys(destinations).length == 0) destinations = []
+    let destinations = yield call(getDestinations)
+    // let destinations = yield call(getPromise,destinationStorageFieldKey)
+    // if(Object.keys(destinations).length == 0) destinations = []
     yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
   }catch(e) {
     yield put({type: DestinationAction.GET_DESTINATION_FAILED,error: e})
@@ -48,8 +50,11 @@ export function* getDestination() {
 }
 export function* removeDestination(action) {
   try {
-    let id = action.id
-    yield call(removePromise,destinationStorageFieldKey,id)
+    let destination = action.destination
+    let id = destination._id // use the id in mongo
+    yield call(removeDestinations,id)
+
+    // yield call(removePromise,destinationStorageFieldKey,id)
     yield put({type: DestinationAction.GET_DESTINATION})
     yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS,connection: id})
   } catch(e) {

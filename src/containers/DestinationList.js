@@ -20,7 +20,7 @@ function mapDispatchToProps(dispatch) {
     getDestinations: () => dispatch({type: DestinationAction.GET_DESTINATION}),
     addDestination: (dest) => dispatch({type: DestinationAction.ADD_DESTINATION,station: dest}),
     clearDestinations: () => dispatch({type: DestinationAction.CLEAR_DESTINATION}),
-    removeDestination: (id) => dispatch({type: DestinationAction.REMOVE_DESTINATION,id}),
+    removeDestination: (dest) => dispatch({type: DestinationAction.REMOVE_DESTINATION,destination:dest}),
     refereshRoute: (target_station_id) => dispatch({type: DestinationAction.GET_DESTINATION,target_station_id}),
     getLineInfo: (line) => dispatch({type: MVGAction.GET_LINE,line}),
     showDestinationDetail: (destination) =>
