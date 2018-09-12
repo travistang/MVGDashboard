@@ -1,7 +1,6 @@
 // const storage = require('electron-json-storage');
-import feathers from '@feathersjs/feathers'
-import rest from '@feathersjs/rest-client'
-
+import feathers from "@feathersjs/client"
+const rest = feathers.rest
 export const DATABASE_URL = "http://localhost:3001"
 const app = feathers()
 
