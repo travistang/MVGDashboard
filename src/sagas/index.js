@@ -15,6 +15,8 @@ import {
 
   watchDestinationAdd,
   watchDestinationRemove,
+
+  checkWatchingDepartureExpire,
 } from './mvg'
 
 import {
@@ -45,6 +47,8 @@ export function* tick() {
   let stateClock = yield select(getClock)
   let shouldUpdate = yield select(state => state.clock.shouldUpdate)
 
+  // check watch departure's expration
+  yield call(checkWatchingDepartureExpire)
   // for every minute...
   // fetch station (subject to be changed)
 

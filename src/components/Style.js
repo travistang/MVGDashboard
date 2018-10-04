@@ -32,6 +32,10 @@ let cell = {
 
 export default {
   tokenList,
+  watchingDeparture: {
+    backgroundColor: color.green,
+    width: '100%'
+  },
   app: {
     display: "flex",
     flexDirection: "column",
@@ -247,6 +251,13 @@ export default {
       alignItems: "flex-start",
       upperRow: {
         flex: 1,
+      },
+      center: {
+        display: 'flex',
+        flex: 1,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
       }
     }
 
