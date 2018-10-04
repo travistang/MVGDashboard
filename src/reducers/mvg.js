@@ -14,8 +14,10 @@ const defaultState = {
   lines: {},
   // this is a list of line segment computed
   connectionLines: {},
+
   // the departure that we are looking at
-  watchingDepature: null
+  watchingDepature: null,
+  departureQR: null,
 }
 export default function mvg(state = defaultState,action) {
   if(action.error) {
@@ -62,8 +64,11 @@ export default function mvg(state = defaultState,action) {
       }
     case MVGAction.SET_LINE_SEGMENT_CACHE:
       return {...state,connectionLines: Object.assign({},action.connectionLines)}
+
     case MVGAction.WATCH_DEPARTURE:
       return {...state, watchingDepature: action.departure}
+    case MVGAction.SHOW_QR:
+      return {...state,departureQR: action.qr}
     default: return state
   }
 }

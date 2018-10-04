@@ -25,6 +25,8 @@ import StationSelection from '../containers/StationSelection'
 import InformationOverlay from './InformationOverlay'
 import API from '../api'
 import * as Utils from '../utils/utils'
+import QRCode from 'qrcode.react'
+
 export default class Popup extends React.Component {
   constructor(props) {
     super(props)
@@ -233,9 +235,23 @@ export default class Popup extends React.Component {
       </Modal>
     )
   }
+  departureQRComponent() {
+    return (
+      <Modal show={true} bsSize="large" onHide={this.props.onHide}>
+        <Modal.Header closeButton>
+          <Modal.Title> QR Code for this departure </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <QRCode size={Math.round(window.innerHeight * 0.8)} value={this.props.departureQR} />
+        </Modal.Body>
+      </Modal>
+    )
+  }
   render() {
     if(this.props.destinationDetail)
       return this.destinationDetailComponent()
+    else if(this.props.departureQR)
+      return this.departureQRComponent()
     else
     return (
       <Modal show={true} bsSize="large" onHide={this.props.onHide}>

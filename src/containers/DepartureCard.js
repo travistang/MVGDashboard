@@ -2,8 +2,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import DepartureCard from '../components/DepartureCard'
 import {
-  WATCH_DEPARTURE
+  WATCH_DEPARTURE,
+  SHOW_QR
 } from '../actions/mvg'
+
 function mapStateToProps(state) {
   return {
     currentTime: state.clock.currentTime,
@@ -19,6 +21,10 @@ function mapDispatchToProps(dispatch) {
     removeWatchingDeparture: () => dispatch({
       type: WATCH_DEPARTURE,
       departure: null
+    }),
+    showQR: (qr) => dispatch({
+      type: SHOW_QR,
+      qr
     })
   }
 }

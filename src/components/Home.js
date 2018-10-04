@@ -34,7 +34,7 @@ export default class Home extends Component<Props> {
     super(props)
 
     this.state = {
-      numDeparturesShown: 5,
+      numDeparturesShown: 3,
       departurePage: 1,
       showPopup: false,
     }
@@ -166,6 +166,8 @@ export default class Home extends Component<Props> {
     this.setState({...this.state,showPopup: false})
     // clear the destination detail so that the popup will close
     this.props.clearDestinationDetail()
+    // clear the qr so that the popup will close
+    this.props.clearDepartureQR()
   }
   // the component that renders the departure
   watchingDepatureComponent() {
@@ -263,7 +265,7 @@ export default class Home extends Component<Props> {
         {(!this.isStationLoaded()) && this.loadingOverlay()}
         {this.navBar()}
         {/* Some more usage of the popup: show destination details...*/}
-        {(this.state.showPopup || this.props.destinationDetail) && this.popup()}
+        {(this.state.showPopup || this.props.destinationDetail || this.props.departureQR) && this.popup()}
         <div style={style.mainContainer}>
           {this.leftContainer()}
           {this.rightContainer()}

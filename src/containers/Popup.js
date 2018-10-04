@@ -9,7 +9,8 @@ function mapStateToProps(state) {
     stations: state.mvg.stations,
     connections: state.mvg.connections,
     connectionLines: state.mvg.connectionLines,
-    destinationDetail: state.destination.destinationDetail
+    destinationDetail: state.destination.destinationDetail,
+    departureQR: state.mvg.departureQR
   }
 }
 

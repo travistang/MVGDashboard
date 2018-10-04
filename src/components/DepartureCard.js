@@ -4,7 +4,7 @@ import LineTag from './LineTag'
 import PropTypes from 'prop-types'
 import * as Utils from '../utils/utils'
 import Glyphicon from 'react-bootstrap/lib/Glyphicon'
-
+import _ from 'lodash'
 export default class DepartureCard extends React.Component {
 
   departureTime() {
@@ -36,21 +36,24 @@ export default class DepartureCard extends React.Component {
       />
     )
   }
-  // function that gives the styles if "watching" in props
-  getWatchingStyles() {
-    if(!this.props.watching) return {}
-    return {
-      bsStyle:"info"
-    }
-  }
   onClick() {
     if(!this.props.watching) this.props.watchDeparture(this.props.departure)
+  }
+  showQRCode() {
+    // prepare the qr code for the serialised departure
+    const qr = btoa(
+      JSON.stringify(
+        _.pick(this.props.departure,
+          'id,departureTime,label,destination'.split(',')
+        )
+      )
+    )
+    this.props.showQR(qr)
   }
   render() {
     return (
       <div
         onClick={this.onClick.bind(this)}
-        {...this.getWatchingStyles()}
         style={{...style.departureCard,opacity: (this.isGone())?0.5:1}}>
         <div style={style.departureCard.leftColumn}>
           {this.timeLeft()}
@@ -75,6 +78,11 @@ export default class DepartureCard extends React.Component {
           /* For the watching part*/
           this.props.watching && (
             <div style={style.departureCard.rightColumn}>
+              <div style={style.departureCard.rightColumn.center}>
+                <div onClick={this.showQRCode.bind(this)}>
+                  <Glyphicon glyph="qrcode" />
+                </div>
+              </div>
               <div style={style.departureCard.rightColumn.center}>
                 <div onClick={this.props.removeWatchingDeparture}>
                   <Glyphicon glyph="remove" />
