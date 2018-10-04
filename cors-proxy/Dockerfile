@@ -1,4 +1,4 @@
-from node:latest
+from hypriot/rpi-node
 
 workdir /app
 copy ./index.js ./package.json ./package-lock.json /app/
