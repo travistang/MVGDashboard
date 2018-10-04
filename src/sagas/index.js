@@ -70,10 +70,11 @@ export function* tick() {
     if(stateClock > 0 && stateClock % 60 == 0 && shouldUpdate) {
       // for all subsequent time...
       yield put({type: MVGAction.GET_DEPARTURES})
-
+      // synchronise destination with server
+      yield put({type: DestinationAction.GET_DESTINATION})
       // trigger reload of all connection list
-      let destinations = yield select(state => state.destination.destinations)
-      yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
+      // let destinations = yield select(state => state.destination.destinations)
+      // yield put({type: DestinationAction.GET_DESTINATION_SUCCESS,destinations})
     }
   }
   catch (e) {
