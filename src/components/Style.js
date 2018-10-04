@@ -42,6 +42,7 @@ export default {
     overflowX: "hidden"
   },
   modal: {
+
     container: {
       display: "flex",
       flexDirection: "column",

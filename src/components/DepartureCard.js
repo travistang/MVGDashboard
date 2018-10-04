@@ -24,7 +24,12 @@ export default class DepartureCard extends React.Component {
     if(hh > 0) timestr = `${pad(hh)}:${pad(mm)}:${pad(ss)}`
     else timestr = `${pad(mm)}:${pad(ss)}`
     return [
-      <h6 style={style.centerContentStyle}> IN </h6>,
+      (
+        <div style={style.centerContentStyle}>
+          <Glyphicon glyph="time" />
+        </div>
+
+      ),
       <h5 style={style.centerContentStyle}>{timestr}</h5>
     ]
   }
@@ -37,7 +42,7 @@ export default class DepartureCard extends React.Component {
     )
   }
   onClick() {
-    if(!this.props.watching) this.props.watchDeparture(this.props.departure)
+    if(!this.props.watching && !this.isGone()) this.props.watchDeparture(this.props.departure)
   }
   showQRCode() {
     // prepare the qr code for the serialised departure
