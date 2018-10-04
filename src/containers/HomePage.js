@@ -15,7 +15,7 @@ function mapStateToProps(state) {
     ...state.mvg,
     // to check whether user is trying to change his current location or not
     ...state.location,
-    destinationDetail: state.destination.destinationDetail
+    destinationDetail: state.destination.destinationDetail,
   }
 }
 

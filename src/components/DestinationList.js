@@ -30,7 +30,7 @@ export default class DestinationList extends React.Component {
       MAP: 2,
     }
     this.state = {
-      numDestinationShown: 3,
+      numDestinationShown: 2,
       currentPage: 1,
       isAddingNewDestination: false,
       isRemoving: false,

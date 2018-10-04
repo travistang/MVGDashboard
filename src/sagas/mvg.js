@@ -112,6 +112,7 @@ function* onGetDepartures() {
     let departureLists = Utils.flattenList(departures.filter(d => !d.error))
       .sort((a,b) => a.departureTime - b.departureTime)
       .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures
+      .slice(0,30) // limit the number of departures show...
     yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
   }
 }

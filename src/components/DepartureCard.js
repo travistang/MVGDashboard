@@ -44,6 +44,25 @@ export default class DepartureCard extends React.Component {
   onClick() {
     if(!this.props.watching && !this.isGone()) this.props.watchDeparture(this.props.departure)
   }
+
+  // now here are some sort of maths...
+  /*
+    This function takes the remaining time and distance between current station and station of departure,
+    and return the PROBABILITY of reaching the station ON OR BEFORE the departure time
+
+    - first we take the average speed of human walking : 3.1mph (first result from Google...:https://www.reference.com/health/average-human-walking-speed-8df1ec5d0858683e)
+    - then we take some standard deviation (which is an assumption) and model the probability distribution of the SPEED of the user (myself...?) as normal distribution
+    - now we evaluate the PROBABILITY of arrive successfully
+        = p(arrive before departure)
+        = integrate(slowest_speed_to_catch departure, inf)
+        where slowest_speed_to_catch_departure = distance / (departure_time - current_time)
+
+
+  */
+  getSuccessfulCatchPercentage() {
+    // TODO: this
+    return 1.0
+  }
   showQRCode() {
     // prepare the qr code for the serialised departure
     const qr = btoa(
