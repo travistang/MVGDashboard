@@ -3,6 +3,7 @@ import style from './Style.js'
 import LineTag from './LineTag'
 import PropTypes from 'prop-types'
 import * as Utils from '../utils/utils'
+import Glyphicon from 'react-bootstrap/lib/Glyphicon'
 
 export default class DepartureCard extends React.Component {
 
@@ -35,9 +36,22 @@ export default class DepartureCard extends React.Component {
       />
     )
   }
+  // function that gives the styles if "watching" in props
+  getWatchingStyles() {
+    if(!this.props.watching) return {}
+    return {
+      bsStyle:"info"
+    }
+  }
+  onClick() {
+    if(!this.props.watching) this.props.watchDeparture(this.props.departure)
+  }
   render() {
     return (
-      <div style={{...style.departureCard,opacity: (this.isGone())?0.5:1}}>
+      <div
+        onClick={this.onClick.bind(this)}
+        {...this.getWatchingStyles()}
+        style={{...style.departureCard,opacity: (this.isGone())?0.5:1}}>
         <div style={style.departureCard.leftColumn}>
           {this.timeLeft()}
         </div>
@@ -57,6 +71,18 @@ export default class DepartureCard extends React.Component {
             {this.departureTime()}
           </div>
         </div>
+        {
+          /* For the watching part*/
+          this.props.watching && (
+            <div style={style.departureCard.rightColumn}>
+              <div style={style.departureCard.rightColumn.center}>
+                <div onClick={this.props.removeWatchingDeparture}>
+                  <Glyphicon glyph="remove" />
+                </div>
+              </div>
+            </div>
+          )
+        }
       </div>
     )
   }

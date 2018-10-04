@@ -47,6 +47,19 @@ function* getGeoLocation() {
     }
   } else return location
 }
+// saga that checks if there ware watching departures and that it has gone
+// if it is then it mutates the store to remove the watching departure...
+export function* checkWatchingDepartureExpire() {
+  const watchingDepature = yield select(s => s.mvg.watchingDepature)
+  if(!watchingDepature) return // nothing to do here...
+  const currentTime = yield select(s => s.clock.currentTime)
+  if(currentTime > watchingDepature.departureTime) {
+    yield put({
+      type: MVGAction.WATCH_DEPARTURE,
+      depature: null
+    })
+  }
+}
 function* onFetchStationSuccess() {
   // get closest station here!
   const getAllStations = state => state.mvg.stations

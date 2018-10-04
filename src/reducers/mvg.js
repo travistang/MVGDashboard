@@ -13,7 +13,9 @@ const defaultState = {
   // it will only be filled on demand (say the line info is requested)
   lines: {},
   // this is a list of line segment computed
-  connectionLines: {}
+  connectionLines: {},
+  // the departure that we are looking at
+  watchingDepature: null
 }
 export default function mvg(state = defaultState,action) {
   if(action.error) {
@@ -60,6 +62,8 @@ export default function mvg(state = defaultState,action) {
       }
     case MVGAction.SET_LINE_SEGMENT_CACHE:
       return {...state,connectionLines: Object.assign({},action.connectionLines)}
+    case MVGAction.WATCH_DEPARTURE:
+      return {...state, watchingDepature: action.departure}
     default: return state
   }
 }

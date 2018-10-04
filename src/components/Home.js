@@ -167,6 +167,17 @@ export default class Home extends Component<Props> {
     // clear the destination detail so that the popup will close
     this.props.clearDestinationDetail()
   }
+  // the component that renders the departure
+  watchingDepatureComponent() {
+    return (
+      <div style={style.watchingDeparture}>
+        <DepartureCard
+          watching={true}
+          departure={this.props.watchingDepature}>
+        </DepartureCard>
+      </div>
+    )
+  }
   leftContainer() {
     if(this.props.closest_stations.length == 0) return null
     let closestStation = this.props.closest_stations[0]
@@ -174,22 +185,9 @@ export default class Home extends Component<Props> {
     if (!this.props.isChangingLocation)
     return (
       <div style={style.mainContainer.leftContainer}>
-        {/*
-          <div style={style.mainContainer.leftContainer.topContainer}>
-          <div
-            onClick={this.selectLocation.bind(this)}
-            style={style.mainContainer.leftContainer.topContainer.overlay}
-          >
-            <h6> You are around </h6>
-            <h2>
-              {Utils.getStationName(closestStation)}
-            </h2>
-
-          </div>
-
-        </div>
-        */}
-
+        {
+          this.props.watchingDepature && this.watchingDepatureComponent()
+        }
         <DestinationList />
 
       </div>
