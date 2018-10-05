@@ -13,7 +13,9 @@ import {
   FormGroup,
   ControlLabel,
   Glyphicon,
-  Modal
+  Modal,
+
+  DropdownButton,
 } from 'react-bootstrap'
 import style from './Style.js';
 import DetailsPopup from '../containers/Popup'
@@ -25,6 +27,8 @@ import StationSelection from './StationSelection'
 import DestinationList from '../containers/DestinationList'
 import {DepartureListHeader} from '../components/DepartureCard'
 import * as Utils from '../utils/utils'
+import _ from 'lodash'
+import LineTag from './LineTag'
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet'
 type Props = {};
 
@@ -33,10 +37,15 @@ export default class Home extends Component<Props> {
   constructor(props) {
     super(props)
 
+    // filter value, in minutes
+    this.timeFilter = [1,3,5,10,15,20,30,40,60]
     this.state = {
       numDeparturesShown: 3,
       departurePage: 1,
       showPopup: false,
+
+      filterLabel: null,
+      timeFilter: null,
     }
   }
   getNextRefreshTime() {
@@ -216,32 +225,129 @@ export default class Home extends Component<Props> {
       ...stationElements
     ]
   }
+  getFilteredDepartureList() {
+    return this.props.departures
+    .filter(dept => !this.state.filterLabel || (dept.label && this.state.filterLabel === dept.label )) // filter according to the selected label to filter
+    .filter(dept => !this.state.timeFilter || (dept.departureTime - this.props.currentTime) / (1000 * 60) > this.state.timeFilter)
+  }
   departureList() {
-    if(!this.props.departures.length) return (
-      <ImageWithText glyphicon="exclamation-sign" text="No departures nearby" opacity={0.8} />
+    if(!this.getFilteredDepartureList().length) return (
+      <ImageWithText glyphicon="exclamation-sign" text="No departures nearby or no matched departures found." opacity={0.8} />
     )
     let indexFrom = this.state.numDeparturesShown * (this.state.departurePage - 1)
     let indexTo = Math.min(this.props.departures.length,indexFrom + this.state.numDeparturesShown)
-    return this.props.departures
+    return this.getFilteredDepartureList()
       .slice(indexFrom,indexTo)
       .map(departure => <DepartureCard departure={departure} />)
   }
   getDeparturePagination() {
     // you dont need a pager
-    if(this.props.departures.length <= this.state.numDeparturesShown) return null
-    let numPageNeeded = Math.floor(this.props.departures.length / this.state.numDeparturesShown)
+    const fullDepartureList = this.getFilteredDepartureList()
+    if(fullDepartureList.length <= this.state.numDeparturesShown) return null
+    let numPageNeeded = Math.floor(fullDepartureList.length / this.state.numDeparturesShown)
     return (
       <Pagination>
         {Utils.listOfN(numPageNeeded).map(n => <Pagination.Item active={this.state.departurePage == n} onClick={() => this.setState({...this.state,departurePage: n})}>{n}</Pagination.Item>)}
       </Pagination>
     )
   }
+  filterLabel(lbl) {
+    this.setState({
+      filterLabel: lbl,
+      departurePage: 1 // always goes to the first page when filter changes
+    })
+  }
+  departureLineFilterDropdownList() {
+    const lblFilterOptions = _.uniq(this.props.departures.map(d => d.label)).map((lbl,i) => (
+      <MenuItem key={i} eventKey={lbl} onSelect={this.filterLabel.bind(this)}>
+        <div style={style.stationSelection}>
+          <div style={style.stationSelection.labels}>
+            <LineTag backgroundColor={Utils.getColor(lbl)} line={lbl} />
+
+          </div>
+          <div style={style.stationSelection.name}>
+            {lbl}
+          </div>
+        </div>
+
+      </MenuItem>
+    ))
+    return [
+      (
+        <MenuItem key={-1} envetKey={null} onSelect={this.filterLabel.bind(this)}>
+          <div style={style.stationSelection}>
+            <div style={style.stationSelection.labels}>
+              <Glyphicon glyph="remove"></Glyphicon>
+            </div>
+            <div style={style.stationSelection.name}>
+              No filter
+            </div>
+          </div>
+        </MenuItem>
+      ),
+      ...lblFilterOptions,
+    ]
+  }
+  departureTimeFilterDropdownList() {
+    const timeOptions = this.timeFilter.map((t,i) => (
+      <MenuItem key={i} eventKey={t} onSelect={this.filterTime.bind(this)}>
+        <div style={style.stationSelection}>
+          <div style={style.stationSelection.labels}>
+            >{t}
+          </div>
+          <div style={style.stationSelection.name}>
+            minutes
+          </div>
+        </div>
+      </MenuItem>
+    ))
+    return [
+      (
+        <MenuItem key={-1} envetKey={null} onSelect={this.filterTime.bind(this)}>
+          <div style={style.stationSelection}>
+            <div style={style.stationSelection.labels}>
+              <Glyphicon glyph="remove"></Glyphicon>
+            </div>
+            <div style={style.stationSelection.name}>
+              No filter
+            </div>
+          </div>
+        </MenuItem>
+      ),
+      ...timeOptions
+    ]
+  }
+  filterTime(t) {
+    this.setState({
+      timeFilter: t,
+      departurePage: 1,
+    })
+  }
   rightContainer() {
     if(this.props.closest_stations.length == 0) return null
     return (
       <div style={style.mainContainer.rightContainer}>
         <div style={style.mainContainer.rightContainer.topContainer}>
-            <h2>Departures</h2>
+            <h2 style={{paddingRight: 16}}>Departures</h2>
+            {
+              this.props.departures.length &&
+              ([
+                (
+                  <DropdownButton title={this.state.filterLabel || "Label filter"} bsSize="small">
+                    {this.departureLineFilterDropdownList()}
+                  </DropdownButton>
+                ),
+                (
+                  <DropdownButton
+                    title={(this.state.timeFilter && `>${this.state.timeFilter} minute(s)`) || "Time Filter"}
+                    bsSize="small"
+                  >
+                    {this.departureTimeFilterDropdownList()}
+                  </DropdownButton>
+                )
+              ]) || null
+            }
+
         </div>
 
         <div style={style.mainContainer.rightContainer.middleContainer}>

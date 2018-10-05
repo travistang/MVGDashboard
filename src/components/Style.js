@@ -387,6 +387,7 @@ export default {
         width: "100%",
         marginBottom: "16px",
         alignItems: 'center',
+        justifyContent: 'flex-start',
         display: 'flex',
       },
       middleContainer: {

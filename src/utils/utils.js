@@ -246,7 +246,7 @@ export const getStationOverviewComponent = (station) => {
         {station.name}
       </div>
 
-     </div>
+    </div>
   )
 }
 // takes a coord string, say '123.456,456.789', and return [123.456,456.789]
