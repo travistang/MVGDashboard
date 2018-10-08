@@ -3,15 +3,9 @@ services:
         proxy:
                 build: ./cors-proxy
                 ports:
-                        - '9898:3000'
-#        database:
-#                image: dhermanns/rpi-mongo
-#                ports:
-#                        - '27017:27017'
-
+                        - '9898:9898'
         backend:
                 build: './backend'
                 ports:
                         - '3001:3001'
-                network_mode: host
 

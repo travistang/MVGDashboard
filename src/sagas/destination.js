@@ -44,12 +44,13 @@ export function* getDestination() {
 export function* removeDestination(action) {
   try {
     let destination = action.destination
-    let id = destination._id // use the id in mongo
+    let id = destination.id
+    //let id = destination._id // use the id in mongo
     yield call(removeDestinations,id)
 
     // yield call(removePromise,destinationStorageFieldKey,id)
     yield put({type: DestinationAction.GET_DESTINATION})
-    yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS,connection: destination.id})
+    yield put({type: DestinationAction.REMOVE_DESTINATION_SUCCESS,connection: id})
   } catch(e) {
     yield put({type: DestinationAction.REMOVE_DESTINATION_FAILED,error: e})
   }
