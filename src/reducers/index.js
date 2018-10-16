@@ -6,13 +6,15 @@ import clock from './clock'
 import mvg from './mvg'
 import destination from './destinations'
 import location from './location'
+import connectivity from './connectivity'
 const rootReducer = combineReducers({
   counter,
   mvg,
   clock,
   destination,
   location,
-  router
+  router,
+  connectivity
 });
 
 export default rootReducer;

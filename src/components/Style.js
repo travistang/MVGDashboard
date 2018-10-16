@@ -332,9 +332,9 @@ export default {
   },
   mainContainer: {
     flex: 1,
-    position: "absolute",
+    // position: "absolute",
     overflowX: "hidden",
-    top: "62px", // this is the offset for the nav bar
+    // top: "62px", // this is the offset for the nav bar
     width: "100%",
     bottom: 0,
     left: 0,

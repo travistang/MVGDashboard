@@ -9,6 +9,7 @@ import * as Utils from '../utils/utils'
 import * as LocationSaga from './location'
 import {getPromise,setPromise} from '../api/destination'
 import Line from '../api/line'
+import * as ConnectivityActions from '../actions/connectivity'
 
 const apiInstance = new Api()
 const lineInstance = new Line()
@@ -19,14 +20,19 @@ export function* fetchStation() {
   stations = yield call(getPromise,storeKey)
   if(Object.keys(stations).length == 0) {
     // no stations stored in local storage, fetch from internet
-    stations = yield call(apiInstance.getAllStations.bind(apiInstance))
-    if(stations.error) {
-      yield put({type: MVGAction.FETCH_STATION_FAILED,error: stations.error})
-    } else {
-      yield put({type: MVGAction.FETCH_STATION_SUCCESS, stations})
-      yield call(setPromise,storeKey,stations)
-    }
+    try { // prepare for connectivity problems...
+      stations = yield call(apiInstance.getAllStations.bind(apiInstance))
+      if(stations.error) {
+        yield put({type: MVGAction.FETCH_STATION_FAILED,error: stations.error})
+      } else {
+        yield put({type: MVGAction.FETCH_STATION_SUCCESS, stations})
+        yield call(setPromise,storeKey,stations)
+      }
 
+      yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: true})
+    } catch(connectivityError) {
+      yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: false})
+    }
   } else {
     // get from store
     yield put({type: MVGAction.FETCH_STATION_SUCCESS,stations})
@@ -80,18 +86,24 @@ function* onGetConnection({target_station_id}) {
   if(closestStations && closestStations.length) {
     let closestStation = closestStations[0]
     let from_station_id = closestStation.id
-    let connections = yield call(
-      apiInstance.getConnections.bind(apiInstance),
-      from_station_id,target_station_id)
-    if(!connections || !connections.length || connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
-    else {
-      // now try to make the reducer's life easier
-      // indicate the DESTINATION of this list of connections
-      let connectionsListObj = {
-        [connections[0].to.id]: connections
+    try {
+      let connections = yield call(
+        apiInstance.getConnections.bind(apiInstance),
+        from_station_id,target_station_id)
+      if(!connections || !connections.length || connections.error) yield put({type: MVGAction.GET_CONNECTION_FAILED,error: connections.error})
+      else {
+        // now try to make the reducer's life easier
+        // indicate the DESTINATION of this list of connections
+        let connectionsListObj = {
+          [connections[0].to.id]: connections
+        }
+        yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})
+        yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: true})
       }
-      yield put({type: MVGAction.GET_CONNECTION_SUCCESS,connections: connectionsListObj})
+    } catch(connectivityError) {
+      yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: false})
     }
+
   }
 }
 function* onAddDestinationSuccess(action) {
@@ -103,17 +115,23 @@ function* onGetDepartures() {
 
   if(closestStations && closestStations.length) {
     let closestStationsId = closestStations.map(s => s.id)
-    let departures = yield all(closestStationsId.map(id => call(apiInstance.getDepartureById.bind(apiInstance),id)))
-    if(!departures || !departures.length) {
-      // unable to get departures...
-      yield put({type: MVGAction.GET_DEPARTURES_FAILED})
-      return
+    try {
+      let departures = yield all(closestStationsId.map(id => call(apiInstance.getDepartureById.bind(apiInstance),id)))
+      if(!departures || !departures.length) {
+        // unable to get departures...
+        yield put({type: MVGAction.GET_DEPARTURES_FAILED})
+        return
+      }
+      let departureLists = Utils.flattenList(departures.filter(d => !d.error))
+        .sort((a,b) => a.departureTime - b.departureTime)
+        .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures
+        .slice(0,30) // limit the number of departures show...
+      yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
+      yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: true})
+    } catch(connectivityError) {
+      yield put({type: ConnectivityActions.SET_MVG_CONNECTIVITY_FLAG, ok: false})
     }
-    let departureLists = Utils.flattenList(departures.filter(d => !d.error))
-      .sort((a,b) => a.departureTime - b.departureTime)
-      .map(dep => ({...dep,from: closestStations.find(station => station.id == dep.id)})) // put the station origin back to the departures
-      .slice(0,30) // limit the number of departures show...
-    yield put({type:MVGAction.GET_DEPARTURES_SUCCESS,departures: departureLists})
+
   }
 }
 // callback for taking "GET_CONNECTION_SUCCESS" event from the destination actions.

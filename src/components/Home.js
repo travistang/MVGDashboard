@@ -72,7 +72,7 @@ export default class Home extends Component<Props> {
   }
   navBar() {
     return (
-      <Navbar fluid staticTop>
+      <Navbar fluid>
         <Navbar.Header>
           <Navbar.Brand>
             MVG Dashboard
@@ -83,11 +83,6 @@ export default class Home extends Component<Props> {
           {
             this.isStationLoaded() && this.getNextRefreshComponent()
           }
-          {/*
-            <NavItem onClick={this.props.toggleUpdate}>
-              {this.props.shouldUpdate?"Stop update":"Resume update"}
-            </NavItem>
-          */}
 
           </Nav>
           <Nav pullRight>
@@ -98,6 +93,7 @@ export default class Home extends Component<Props> {
                 </NavItem>
               )
             }
+            {this.getConnectivityComponent()}
             <NavItem onClick={this.selectLocation.bind(this)} style={style.navBar.location}>
               {(this.props.closest_stations.length && this.props.closest_stations[0].name) || null}
               <span className="glyphicon glyphicon-map-marker" />
@@ -112,6 +108,35 @@ export default class Home extends Component<Props> {
         </Navbar.Collapse>
 
       </Navbar>)
+  }
+  getConnectivityComponent() {
+    const endpointNameToStateDict = {
+      "MVG": this.props.mvg_status,
+      "MVV": this.props.mvv_status,
+      "Backend": this.props.backend_status,
+      "Proxy": this.props.proxy_status,
+    }
+    // calculate the number of failed connection
+    const numFails = Object.values(endpointNameToStateDict).reduce((a,v) => v?a:(a + 1), 0)
+    const getGlyphByStatus = (ok) => (
+      ok? <Glyphicon glyph="ok" /> : <Glyphicon glyph="remove" />
+    )
+    return (
+      <NavDropdown title={numFails?`${numFails} failed`: "Connected"}>
+        {Object.keys(endpointNameToStateDict).map(name => (
+          <MenuItem key={name}>
+            <div style={style.stationSelection}>
+              <div style={style.stationSelection.labels}>
+                {name}
+              </div>
+              <div style={style.stationSelection.name}>
+                {getGlyphByStatus(endpointNameToStateDict[name])}
+              </div>
+            </div>
+          </MenuItem>
+        ))}
+      </NavDropdown>
+    )
   }
   isStationLoaded() {
     return this.props.stations && this.props.stations.length > 0
