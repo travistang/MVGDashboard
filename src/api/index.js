@@ -49,9 +49,11 @@ export default class {
     let url = this.getDepartureEndpointById(id)
     let response = await this.performRequest(url)
     if(response.error) return response // sorry..
-    let result
-    if(numDepartures <= 0 ) result = response.departures
-    else result = response.departures.slice(0,numDepartures)
+    let result,
+        now = new Date(),
+        validDepartures = response.departures.filter(departure => departure.departureTime >= now)
+    if(numDepartures <= 0 ) result = validDepartures
+    else result = validDepartures.slice(0,numDepartures)
     return result.map(dep => ({...dep,id})) // add the request id to departures, so that the origin of the departure can be traced later
   }
   async getServingLines(id) {
@@ -83,7 +85,7 @@ export default class {
 
     return stationsByDistance.slice(0,number)
   }
-  
+
   // perform actual requests
   performRequest(url) {
     return fetch(url,{
