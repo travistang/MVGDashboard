@@ -74,19 +74,35 @@ export default class DepartureCard extends React.Component {
     )
     this.props.showQR(qr)
   }
+  getSEVStyle() {
+    if(this.props.departure.sev) {
+      return {
+        color: '#962984'
+      }
+    } else return {}
+  }
+  getLiveDepartureColor() {
+    if(this.props.departure.live) {
+      return {
+        color: 'green'
+      }
+    } else {
+      return {}
+    }
+  }
   render() {
     return (
       <div
         onClick={this.onClick.bind(this)}
         style={{...style.departureCard,opacity: (this.isGone())?0.5:1}}>
-        <div style={style.departureCard.leftColumn}>
+        <div style={{...style.departureCard.leftColumn,...this.getLiveDepartureColor()}}>
           {this.timeLeft()}
         </div>
 
         <div style={style.departureCard.middleColumn}>
           <div style={style.departureCard.middleColumn.upperRow}>
             {this.lineTag()}
-            <div>{this.props.departure.destination}</div>
+            <div style={this.getSEVStyle()}>{this.props.departure.destination}</div>
           </div>
           <div style={style.departureCard.middleColumn.lowerRow}>
             from <b>{this.props.departure.from.name}</b>
